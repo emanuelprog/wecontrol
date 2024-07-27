@@ -1,0 +1,118 @@
+.login-container {
+  display: flex;
+  height: 100vh;
+}
+
+.login-form-container {
+  width: 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  margin-top: -150px;
+}
+
+.background-container {
+  width: 70%;
+  background-color: #0D6EFD;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.card {
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  box-shadow: none;
+  color: #0D6EFD;
+}
+
+.card-header-title {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.form-group label {
+  font-weight: 500;
+}
+
+button {
+  box-shadow: 0px 8px 12px #bdd8ff;
+}
+
+@media (max-width: 768px) {
+  .login-container {
+    flex-direction: column;
+    align-items: center;
+    background-color: #0D6EFD;
+  }
+
+  .login-form-container {
+    width: 100%;
+    margin-top: 0;
+    padding: 20px;
+  }
+
+  .card {
+    color: #0D6EFD;
+    background-color: white;
+  }
+
+  .card-header-title, .card-title {
+    color: #0D6EFD;
+  }
+
+  .form-group label {
+    color: #0D6EFD;
+  }
+
+  button {
+    background-color: #0D6EFD;
+    color: white;
+    border: none;
+  }
+
+  .background-container {
+    width: 100%;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .background-container h1, .background-container h2 {
+    color: white;
+    margin: 10px 0;
+  }
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+  margin: 30px 0px;
+  font-size: 14px;
+  color: #EEEEEE;
+  font-weight: 400;
+  text-transform: uppercase;
+
+  div {
+      flex-grow: 1;
+      height: 2px;
+      background-color: #EEEEEE;
+  }
+}
