@@ -8,9 +8,9 @@ import { Component } from '@angular/core';
   styleUrl: './logged.component.scss'
 })
 export class LoggedComponent {
-  login: string | null = '';
+  name: string | null = '';
 
   constructor() {
-    this.login = sessionStorage.getItem('login');
+    this.name = sessionStorage.getItem('name');
   }
 }

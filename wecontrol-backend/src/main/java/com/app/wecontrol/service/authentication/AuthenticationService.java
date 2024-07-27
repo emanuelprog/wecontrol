@@ -26,7 +26,7 @@ public class AuthenticationService {
             UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
             var auth =  authenticationManager.authenticate(usernamePassword);
             var token = tokenService.generateToken((User) auth.getPrincipal());
-            return new LoginResponseDTO(token, ((User) auth.getPrincipal()).getLogin());
+            return new LoginResponseDTO(token, ((User) auth.getPrincipal()).getLogin(), ((User) auth.getPrincipal()).getName());
         } catch (Exception e) {
             throw new BadRequestException("Unable to login");
         }
@@ -36,12 +36,22 @@ public class AuthenticationService {
         if (userRepository.findByLogin(registerDTO.login()) != null) {
             throw new BadRequestException("User already exists!");
         }
+        if (userRepository.findByEmail(registerDTO.email()) != null) {
+            throw new BadRequestException("E-mail already exists!");
+        }
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-            User newUser = new User(registerDTO.login(), encryptedPassword, registerDTO.role());
+            User newUser = new User(registerDTO.login(), encryptedPassword, registerDTO.role(), registerDTO.name(), registerDTO.email());
             return userRepository.save(newUser);
         } catch (Exception e) {
             throw new BadRequestException("Unable to register!");
         }
+    }
+
+    public String confirmEmail(String email) {
+        if (userRepository.findByEmail(email) == null) {
+            throw new BadRequestException("Email does not exist!");
+        }
+        return email;
     }
 }

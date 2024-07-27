@@ -6,19 +6,42 @@
         <h3 class="card-title text-center mb-5">Create your account</h3>
         <form [formGroup]="registerForm">
           <div class="form-group mb-3">
+            <label for="name">Name</label>
+            <input type="name" class="form-control" id="name" formControlName="name" required placeholder="Enter name">
+            <div *ngIf="registerForm.get('name')?.invalid && registerForm.get('name')?.touched" class="text-danger">
+              The Name field is required.
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label for="username">E-mail</label>
+            <input type="username" class="form-control" id="username" formControlName="email" required placeholder="Enter e-mail">
+            <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
+              The E-mail field is required.
+            </div>
+          </div>
+          <div class="form-group mb-3">
             <label for="username">Username</label>
             <input type="username" class="form-control" id="username" formControlName="login" required placeholder="Enter username">
+            <div *ngIf="registerForm.get('login')?.invalid && registerForm.get('login')?.touched" class="text-danger">
+              The Username field is required.
+            </div>
           </div>
           <div class="form-group mb-3">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" formControlName="password" required placeholder="Enter password">
+            <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+              The Password field is required.
+            </div>
           </div>
           <div class="form-group mb-3">
             <label for="confirm-password">Confirm Password</label>
             <input type="password" class="form-control" id="confirm-password" formControlName="confirmPassword" required placeholder="Confirm password">
-          </div>
-          <div *ngIf="passwordMismatch">
-            <p class="text-danger">Passwords do not match</p>
+            <div *ngIf="registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched && !passwordMismatch" class="text-danger">
+              The Confirm Password field is required.
+            </div>
+            <div *ngIf="passwordMismatch && registerForm.get('confirmPassword')?.touched">
+              <p class="text-danger">Passwords do not match</p>
+            </div>
           </div>
         </form>
         <div class="mt-5">

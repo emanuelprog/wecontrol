@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { LoginResponse } from '../../models/login.model';
@@ -15,12 +15,11 @@ import { LoginService } from '../../services/login/login.service';
 })
 export class LoginLayoutComponent {
   loginForm: FormGroup;
-  loginResponse: LoginResponse | undefined;
 
   constructor(private fb: FormBuilder, private loginService: LoginService, private snackBar: MatSnackBar, private router: Router) {
     this.loginForm = this.fb.group({
-      login: [''],
-      password: ['']
+      login: ['', Validators.required],
+      password: ['', Validators.required],
     });
   }
 
@@ -29,25 +28,23 @@ export class LoginLayoutComponent {
       this.loginService.login(this.loginForm.get('login')?.value, this.loginForm.get('password')?.value).subscribe({
         next: data => {
           if (data.body) {
-            this.loginResponse = data.body;
-            sessionStorage.setItem('login', this.loginResponse.body.login);
-            sessionStorage.setItem('token', this.loginResponse.body.token);
-            this.onSucess(this.loginResponse.message, '', 2000);
+            sessionStorage.setItem('login', data.body.login);
+            sessionStorage.setItem('token', data.body.token);
+            sessionStorage.setItem('name', data.body.name);
+            this.onMessage('Successfully Logged In', '', 2000);
             this.router.navigate(['/logged']);
           }
         },
         error: (err: any) => {
-          this.onError('Não foi possível Logar!', '', 2000)
+          this.onMessage(err.error.message, '', 2000)
         }
       })
+    } else {
+      this.loginForm.markAllAsTouched();
     }
   }
 
-  private onSucess(message: string, action: string, duration: number) {
-    this.snackBar.open(message, action, { duration: duration, verticalPosition: 'top', horizontalPosition: 'left' })
-  }
-
-  private onError(message: string, action: string, duration: number) {
+  private onMessage(message: string, action: string, duration: number) {
     this.snackBar.open(message, action, { duration: duration, verticalPosition: 'top', horizontalPosition: 'left' })
   }
 }

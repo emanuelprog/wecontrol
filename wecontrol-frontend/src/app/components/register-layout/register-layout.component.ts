@@ -24,6 +24,8 @@ export class RegisterLayoutComponent {
 
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private registerService: RegisterService) {
     this.registerForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', Validators.required],
       login: ['', Validators.required],
       password: ['', Validators.required],
       confirmPassword: ['', Validators.required],
@@ -33,27 +35,24 @@ export class RegisterLayoutComponent {
 
   onSubmit() {
     if (this.registerForm.valid) {
-      this.registerService.register(this.registerForm.get('login')?.value, this.registerForm.get('password')?.value, this.registerForm.get('role')?.value).subscribe({
+      this.registerService.register(this.registerForm).subscribe({
         next: data => {
           if (data.body) {
-            this.onSucess('Successfully registered user!', '', 2000);
+            this.onMessage('Successfully registered user!', '', 2000);
             this.router.navigate(['/login']);
           }
         },
         error: (err: any) => {
-          this.onError('Unable to register!', '', 2000)
+          this.onMessage(err.error.message, '', 2000)
         }
       })
     } else {
-      this.onError('Fill in all fields', '', 2000);
+      this.onMessage('Fill in all fields', '', 2000);
+      this.registerForm.markAllAsTouched();
     }
   }
 
-  private onSucess(message: string, action: string, duration: number) {
-    this.snackBar.open(message, action, { duration: duration, verticalPosition: 'top', horizontalPosition: 'left' })
-  }
-
-  private onError(message: string, action: string, duration: number) {
+  private onMessage(message: string, action: string, duration: number) {
     this.snackBar.open(message, action, { duration: duration, verticalPosition: 'top', horizontalPosition: 'left' })
   }
 
