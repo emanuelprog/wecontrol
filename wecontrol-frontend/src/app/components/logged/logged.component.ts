@@ -1,4 +1,7 @@
 import { Component } from '@angular/core';
+import { LoginResponse } from '../../models/login.model';
+import { StorageService } from '../../services/storage/storage.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-logged',
@@ -8,9 +11,9 @@ import { Component } from '@angular/core';
   styleUrl: './logged.component.scss'
 })
 export class LoggedComponent {
-  name: string | null = '';
+  loginResponse: LoginResponse | undefined;
 
-  constructor() {
-    this.name = sessionStorage.getItem('name');
+  constructor(private authService: AuthService) {
+    this.loginResponse = StorageService.getItem('user');
   }
 }

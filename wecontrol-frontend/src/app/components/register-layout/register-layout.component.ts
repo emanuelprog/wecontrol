@@ -3,12 +3,11 @@ import { Component } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterModule } from '@angular/router';
-import { RegisterService } from '../../services/register/register.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');
-
   return password && confirmPassword && password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
 };
 @Component({
@@ -22,7 +21,7 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
 export class RegisterLayoutComponent {
   registerForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private registerService: RegisterService) {
+  constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private authService: AuthService) {
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
@@ -35,7 +34,7 @@ export class RegisterLayoutComponent {
 
   onSubmit() {
     if (this.registerForm.valid) {
-      this.registerService.register(this.registerForm).subscribe({
+      this.authService.register(this.registerForm).subscribe({
         next: data => {
           if (data.body) {
             this.onMessage('Successfully registered user!', '', 2000);

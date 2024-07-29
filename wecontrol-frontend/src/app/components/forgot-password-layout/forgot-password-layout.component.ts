@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { RouterModule } from '@angular/router';
 import { EmailService } from '../../services/email/email.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { CryptoService } from '../../services/crypto/crypto.service';
 
 @Component({
   selector: 'app-forgot-password-layout',
@@ -15,7 +16,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ForgotPasswordLayoutComponent {
   forgotPasswordForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private emailService: EmailService, private snackBar: MatSnackBar) {
+  constructor(private fb: FormBuilder, private emailService: EmailService, private snackBar: MatSnackBar, private cryptoService: CryptoService) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', Validators.required]
     });
@@ -25,12 +26,13 @@ export class ForgotPasswordLayoutComponent {
     this.emailService.confirmEmail(this.forgotPasswordForm.get('email')?.value).subscribe({
       next: data => {
         if (data.body) {
-          const resetLink = `http://localhost:4200/reset-password?email=${encodeURIComponent(this.forgotPasswordForm.get('email')?.value)}`;
+          const encryptedEmail = this.cryptoService.encrypt(this.forgotPasswordForm.get('email')?.value);
+          const resetLink = `http://localhost:4200/reset-password?token=${encodeURIComponent(encryptedEmail)}`;
           const subject = 'Reset your password';
 
           this.emailService.sendEmail(this.forgotPasswordForm.get('email')?.value, subject, resetLink).then(
-            response => alert('Reset link sent to your email'),
-            error => alert('Error sending email')
+            response => this.onMessage('Reset link sent to your email', 'x', 2000),
+            error => this.onMessage('Error sending email', 'x', 2000)
           );
         }
       },
