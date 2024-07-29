@@ -1,19 +1,19 @@
 .register-container {
   display: flex;
-  height: 100vh;
+  flex-wrap: wrap;
+  min-height: 100vh;
 }
 
 .register-form-container {
-  width: 30%;
+  flex: 1 1 30%;
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 20px;
-  margin-top: -150px;
 }
 
 .background-container {
-  width: 70%;
+  flex: 1 1 70%;
   background-color: #0D6EFD;
   display: flex;
   flex-direction: column;
@@ -50,11 +50,22 @@ button {
   box-shadow: 0px 8px 12px #bdd8ff;
 }
 
+@media (max-width: 992px) {
+  .register-form-container {
+    margin-top: 0;
+  }
+
+  .background-container {
+    display: none;
+  }
+}
+
 @media (max-width: 768px) {
   .register-container {
     flex-direction: column;
     align-items: center;
     background-color: #0D6EFD;
+    min-height: 100vh;
   }
 
   .register-form-container {
@@ -104,7 +115,7 @@ button {
   justify-content: center;
   gap: 20px;
   width: 100%;
-  margin: 30px 0px;
+  margin: 20px 0px;
   font-size: 14px;
   color: #DEE2E6;
   font-weight: 400;
@@ -119,4 +130,20 @@ button {
 
 .ng-invalid.ng-touched {
   border-color: red;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.position-absolute {
+  position: absolute;
+}
+
+.password-toggle {
+  top: 51%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6c757d;
 }

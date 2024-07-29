@@ -20,16 +20,23 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
 
 export class RegisterLayoutComponent {
   registerForm: FormGroup;
+  showPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private authService: AuthService) {
     this.registerForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
       login: ['', Validators.required],
-      password: ['', Validators.required],
-      confirmPassword: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
       role: ['USER']
     }, { validators: passwordMatchValidator });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+    const passwordField = document.getElementById('password') as HTMLInputElement;
+    passwordField.type = this.showPassword ? 'text' : 'password';
   }
 
   onSubmit() {
@@ -46,7 +53,7 @@ export class RegisterLayoutComponent {
         }
       })
     } else {
-      this.onMessage('Fill in all fields', '', 2000);
+      this.onMessage('Invalid form. Please verify!', '', 2000);
       this.registerForm.markAllAsTouched();
     }
   }

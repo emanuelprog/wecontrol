@@ -23,6 +23,7 @@ export class ResetPasswordComponent {
   email: string = '';
   resetPasswordForm: FormGroup;
   tokenExpired: boolean = false;
+  showPassword: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -33,13 +34,19 @@ export class ResetPasswordComponent {
     private authService: AuthService
   ) {
     this.resetPasswordForm = this.fb.group({
-      newPassword: ['', [Validators.required]],
-      confirmNewPassword: ['', [Validators.required, ]]
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmNewPassword: ['', [Validators.required, Validators.minLength(6)]]
     }, { validators: passwordMatchValidator });
   }
 
   ngOnInit() {
     this.checkToken();
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+    const passwordField = document.getElementById('password') as HTMLInputElement;
+    passwordField.type = this.showPassword ? 'text' : 'password';
   }
 
   checkToken() {

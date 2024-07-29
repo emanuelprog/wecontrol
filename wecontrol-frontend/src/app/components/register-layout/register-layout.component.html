@@ -14,7 +14,7 @@
           </div>
           <div class="form-group mb-3">
             <label for="username">E-mail</label>
-            <input type="username" class="form-control" id="username" formControlName="email" required placeholder="Enter e-mail">
+            <input type="email" class="form-control" id="email" formControlName="email" required placeholder="Enter e-mail">
             <div *ngIf="registerForm.get('email')?.invalid && registerForm.get('email')?.touched" class="text-danger">
               The E-mail field is required.
             </div>
@@ -26,11 +26,18 @@
               The Username field is required.
             </div>
           </div>
-          <div class="form-group mb-3">
+          <div class="form-group mb-3 position-relative">
             <label for="password">Password</label>
             <input type="password" class="form-control" id="password" formControlName="password" required placeholder="Enter password">
-            <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
-              The Password field is required.
+            <i [ngClass]="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'" 
+               class="position-absolute password-toggle" 
+               id="togglePassword" 
+               (click)="togglePasswordVisibility()"></i>
+            <div class="d-flex justify-content-between align-items-center">
+              <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="text-danger">
+                The Password field is required.
+              </div>
+              <small [ngClass]="{'text-danger': registerForm.get('password')?.value?.length < 6 && registerForm.get('password')?.touched}" class="ms-auto">{{ registerForm.get('password')?.value?.length || 0 }}/6</small>
             </div>
           </div>
           <div class="form-group mb-3">

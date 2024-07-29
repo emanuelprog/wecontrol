@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } 
 import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth/auth.service';
-import { StorageService } from '../../services/storage/storage.service';
 
 @Component({
   selector: 'app-login-layout',
@@ -15,12 +14,19 @@ import { StorageService } from '../../services/storage/storage.service';
 })
 export class LoginLayoutComponent {
   loginForm: FormGroup;
+  showPassword: boolean = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService, private snackBar: MatSnackBar, private router: Router) {
     this.loginForm = this.fb.group({
       login: ['', Validators.required],
-      password: ['', Validators.required],
+      password: ['', Validators.required, Validators.minLength(6)],
     });
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+    const passwordField = document.getElementById('password') as HTMLInputElement;
+    passwordField.type = this.showPassword ? 'text' : 'password';
   }
 
   onSubmit() {

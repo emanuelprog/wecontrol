@@ -50,11 +50,13 @@ export class AuthService {
         this.startInactivityTimer();
         this.loggedIn.next(true);
       }),
-      catchError(error => {
-        if (error.status === 409) {
+      catchError(err => {
+        if (err.status === 409) {
           this.onMessage('You are already logged into another session. Please log out before trying again.', '', 2000);
+        } else {
+          this.onMessage(err.error.message, '', 2000);
         }
-        return throwError(() => error);
+        return of();
       })
     );
   }
