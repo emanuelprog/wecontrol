@@ -14,6 +14,8 @@ export class LoggedComponent {
   loginResponse: LoginResponse | undefined;
 
   constructor(private authService: AuthService) {
-    this.loginResponse = StorageService.getItem('user');
+    const currentUserUUID = sessionStorage.getItem('currentUser');
+    
+    this.loginResponse = StorageService.getUser(currentUserUUID!).user;
   }
 }

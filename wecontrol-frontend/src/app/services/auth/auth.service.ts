@@ -23,11 +23,15 @@ export class AuthService {
   }
 
   login(login: string, password: string): Observable<HttpResponse<any>> {
-    const user: LoginResponse = StorageService.getItem('user');
-    const accessToken = StorageService.getItem('accessToken');
-    const sessionUUID = sessionStorage.getItem('sessionUUID');
+    const userList = StorageService.getUserList();
+    const existingUser = userList.find(userKey => {
+      const data = StorageService.getUser(userKey);
+      return data.user && data.user.login === login;
+    });
 
-    if (accessToken && user.login === login && sessionUUID !== StorageService.getItem('sessionUUID')) {
+    
+
+    if (existingUser) {
       this.onMessage('You are already logged into another session. Please log out before trying again.', '', 2000);
       return of();
     }
@@ -37,16 +41,21 @@ export class AuthService {
 
         const accessToken = response.body.body.accessToken;
         const refreshToken = response.body.body.refreshToken;
+        const user = response.body.body;
 
-        const newSessionUUID = uuidv4();
-        sessionStorage.setItem('sessionUUID', newSessionUUID);
-        StorageService.setItem('sessionUUID', newSessionUUID);
+        const userUUID = uuidv4();
+        const userData = {
+          user,
+          accessToken,
+          refreshToken,
+          uuid: userUUID,
+        };
 
-        StorageService.setItem('user', response.body.body);
-        StorageService.setItem('accessToken', accessToken);
-        StorageService.setItem('refreshToken', refreshToken);
+        StorageService.addUser(userUUID, userData);
 
-        this.startRefreshTokenTimer();
+        sessionStorage.setItem('currentUser', userUUID);
+
+        this.startRefreshTokenTimer(userUUID);
         this.startInactivityTimer();
         this.loggedIn.next(true);
       }),
@@ -62,24 +71,37 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    const refreshToken = sessionStorage.getItem('refreshToken');
-    const refreshTokenRequest = {
-      refreshToken: refreshToken,
-      login: StorageService.getItem('user').login,
+    const currentUserUUID = sessionStorage.getItem('currentUser');
+    if (!currentUserUUID) {
+      this.logout();
+      return throwError(() => new Error('No current user found in session.'));
     }
+
+    const user = StorageService.getUser(currentUserUUID);
+    const refreshTokenRequest = {
+      refreshToken: user.refreshToken,
+      login: user.login,
+    }
+
     return this.httpClient.post<any>(`${this.baseUrl}/refresh-token`, refreshTokenRequest).pipe(
       tap(response => {
         const accessToken = response.body.accessToken;
+        user.accessToken = accessToken;
 
-        StorageService.setItem('accessToken', accessToken);
-        this.startRefreshTokenTimer();
+        StorageService.addUser(currentUserUUID, user);
+        this.startRefreshTokenTimer(currentUserUUID);
       })
     );
   }
 
-  startRefreshTokenTimer(): void {
-    const accessToken = StorageService.getItem('accessToken');
+  startRefreshTokenTimer(userUUID: string): void {
+    const user = StorageService.getUser(userUUID);
+    if (!user) {
+      this.logout();
+      return;
+    }
 
+    const accessToken = user.accessToken;
     if (accessToken) {
       try {
         const tokenParts = accessToken.split('.');
@@ -104,17 +126,20 @@ export class AuthService {
   }
 
   logout(): void {
-    StorageService.removeItem('accessToken');
-    StorageService.removeItem('refreshToken');
-    this.clearLoginState();
-    this.stopRefreshTokenTimer();
-    this.clearInactivityTimer();
-    this.loggedIn.next(false);
-    this.router.navigate(['/login']);
+    const currentUserUUID = sessionStorage.getItem('currentUser');
+    if (currentUserUUID) {
+      StorageService.removeUser(currentUserUUID);
+      sessionStorage.removeItem('currentUser');
+      this.clearLoginState();
+      this.stopRefreshTokenTimer();
+      this.clearInactivityTimer();
+      this.loggedIn.next(false);
+      this.router.navigate(['/login']);
+    } 
   }
 
   private clearLoginState(): void {
-    StorageService.clear();
+    StorageService.clearAllUsers();
     sessionStorage.clear();
     this.loggedIn.next(false);
   }
@@ -125,14 +150,14 @@ export class AuthService {
 
   private initStorageEventListener(): void {
     window.addEventListener('storage', (event) => {
-      if (event.storageArea === sessionStorage) {
+      if (event.storageArea === localStorage) {
         this.ngZone.run(() => {
-          if (event.key === 'accessToken' || event.key === 'refreshToken') {
-            const accessToken = StorageService.getItem('accessToken');
-            const refreshToken = StorageService.getItem('refreshToken');
-            if (accessToken && refreshToken) {
+          if (event.key!.startsWith(StorageService.USER_PREFIX)) {
+            const userUUID = event.key!.replace(StorageService.USER_PREFIX, '');
+            const user = StorageService.getUser(userUUID);
+            if (user) {
               this.loggedIn.next(true);
-              this.startRefreshTokenTimer();
+              this.startRefreshTokenTimer(userUUID);
             } else {
               this.loggedIn.next(false);
               this.stopRefreshTokenTimer();
