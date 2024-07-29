@@ -1,0 +1,13 @@
+<mat-toolbar>
+    <mat-toolbar-row>
+      <span>WeControl</span>
+      <span class="example-spacer"></span>
+      <i class="fa fa-cog" aria-hidden="true" [matMenuTriggerFor]="menu" style="cursor: pointer; color: white;"></i>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="logout()">
+            <i class="fa fa-sign-out m-2" aria-hidden="true"></i>
+            <span style="color: black;">Logout</span>
+        </button>
+      </mat-menu>
+    </mat-toolbar-row>
+</mat-toolbar>

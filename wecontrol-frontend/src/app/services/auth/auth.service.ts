@@ -24,8 +24,12 @@ export class AuthService {
 
   login(login: string, password: string): Observable<HttpResponse<any>> {
     const userList = StorageService.getUserList();
+    console.log(userList);
+    
     const existingUser = userList.find(userKey => {
+      
       const data = StorageService.getUser(userKey);
+      console.log(data);
       return data.user && data.user.login === login;
     });
 

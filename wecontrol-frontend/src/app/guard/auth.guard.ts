@@ -6,6 +6,7 @@ export const AuthGuard = () => {
   const router = inject(Router);
 
   const currentUserUUID = sessionStorage.getItem('currentUser');
+  
   const accessToken = currentUserUUID ? StorageService.getUser(currentUserUUID)?.accessToken : null;
 
   if (accessToken) {

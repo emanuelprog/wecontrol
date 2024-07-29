@@ -1,10 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth/auth.service';
-import { StorageService } from '../../services/storage/storage.service';
 
 @Component({
   selector: 'app-login-layout',
@@ -13,7 +12,7 @@ import { StorageService } from '../../services/storage/storage.service';
   templateUrl: './login-layout.component.html',
   styleUrl: './login-layout.component.scss'
 })
-export class LoginLayoutComponent implements OnInit, OnDestroy {
+export class LoginLayoutComponent {
   loginForm: FormGroup;
   showPassword: boolean = false;
 
@@ -22,42 +21,7 @@ export class LoginLayoutComponent implements OnInit, OnDestroy {
       login: ['', Validators.required],
       password: ['', [Validators.required]],
     });
-  }
-
-  ngOnInit(): void {
-    sessionStorage.removeItem('currentUser');
-    window.addEventListener('beforeunload', this.handleUnload);
-    document.addEventListener('visibilitychange', this.handleVisibilityChange);
-    window.addEventListener('popstate', this.handlePopState);
-  }
-
-  ngOnDestroy(): void {
-    window.removeEventListener('beforeunload', this.handleUnload);
-    document.removeEventListener('visibilitychange', this.handleVisibilityChange);
-    window.addEventListener('popstate', this.handlePopState);
-  }
-
-  handlePopState = (event: PopStateEvent) => {
-    this.clearCurrentUser();
-  }
-
-  handleUnload = (event: BeforeUnloadEvent) => {
-    this.clearCurrentUser();
-  }
-
-  handleVisibilityChange = () => {
-    if (document.visibilityState === 'hidden') {
-      this.clearCurrentUser();
-    }
-  }
-
-  clearCurrentUser(): void {
-    const currentUserUUID = sessionStorage.getItem('currentUser');
-    
-    if (currentUserUUID) {
-      StorageService.removeUser(currentUserUUID);
-      sessionStorage.removeItem('currentUser');
-    }
+    this.authService.logout();
   }
 
   togglePasswordVisibility(): void {
