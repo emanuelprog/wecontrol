@@ -3,7 +3,8 @@ export interface LoginResponse {
   login: string,
   email: string,
   name: string,
-  token: string
+  accesToken: string
+  role: string
 }
 
 export class LoginResponse implements LoginResponse {
@@ -12,7 +13,8 @@ export class LoginResponse implements LoginResponse {
     public login: string,
     public email: string,
     public name: string,
-    public token: string
+    public accesToken: string,
+    public role: string
       ) { }
   }
 

@@ -3,11 +3,12 @@ import { LoginResponse } from '../../models/login.model';
 import { StorageService } from '../../services/storage/storage.service';
 import { AuthService } from '../../services/auth/auth.service';
 import { ToolbarComponent } from '../toolbar/toolbar.component';
+import { MoaisComponent } from '../moais/moais.component';
 
 @Component({
   selector: 'app-logged',
   standalone: true,
-  imports: [ToolbarComponent],
+  imports: [ToolbarComponent, MoaisComponent],
   templateUrl: './logged.component.html',
   styleUrl: './logged.component.scss'
 })

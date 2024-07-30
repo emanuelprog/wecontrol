@@ -1,6 +1,6 @@
 package com.app.wecontrol.infra.security;
 
-import com.app.wecontrol.repository.UserRepository;
+import com.app.wecontrol.repository.user.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

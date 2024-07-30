@@ -8,11 +8,10 @@ import com.app.wecontrol.dtos.resetPassword.ResetPasswordDTO;
 import com.app.wecontrol.dtos.user.User;
 import com.app.wecontrol.exception.BadRequestException;
 import com.app.wecontrol.infra.security.TokenService;
-import com.app.wecontrol.repository.UserRepository;
+import com.app.wecontrol.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +33,8 @@ public class AuthenticationService {
                     ((User) auth.getPrincipal()).getId(),
                     ((User) auth.getPrincipal()).getLogin(),
                     ((User) auth.getPrincipal()).getEmail(),
-                    ((User) auth.getPrincipal()).getName());
+                    ((User) auth.getPrincipal()).getName(),
+                    ((User) auth.getPrincipal()).getUserRole().getRole());
         } catch (Exception e) {
             throw new BadRequestException("Unable to login");
         }
@@ -48,7 +48,8 @@ public class AuthenticationService {
                     user.getId(),
                     user.getLogin(),
                     user.getEmail(),
-                    user.getName());
+                    user.getName(),
+                    user.getUserRole().getRole());
         } catch (Exception e) {
             throw new BadRequestException("Unable to refresh token");
         }
@@ -84,7 +85,7 @@ public class AuthenticationService {
         }
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
-            User newUser = new User(user.getId(), user.getLogin(), encryptedPassword, user.getRole(), user.getName(), user.getEmail());
+            User newUser = new User(user.getId(), user.getLogin(), encryptedPassword, user.getUserRole(), user.getName(), user.getEmail());
             return userRepository.save(newUser);
         } catch (Exception e) {
             throw new BadRequestException("Unable to reset password!");

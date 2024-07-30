@@ -1,4 +1,4 @@
-package com.app.wecontrol.repository;
+package com.app.wecontrol.repository.user;
 
 import com.app.wecontrol.dtos.user.User;
 import org.springframework.data.mongodb.repository.MongoRepository;

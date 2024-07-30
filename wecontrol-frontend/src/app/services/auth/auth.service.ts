@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
   providedIn: 'root'
 })
 export class AuthService {
-  private baseUrl = 'auth';
+  private baseUrl = 'api/auth';
   refreshTokenTimeout: any;
   loggedIn = new BehaviorSubject<boolean>(false);
   inactivityTimeout: any;
@@ -24,12 +24,9 @@ export class AuthService {
 
   login(login: string, password: string): Observable<HttpResponse<any>> {
     const userList = StorageService.getUserList();
-    console.log(userList);
     
     const existingUser = userList.find(userKey => {
-      
       const data = StorageService.getUser(userKey);
-      console.log(data);
       return data.user && data.user.login === login;
     });
 

@@ -1,6 +1,6 @@
 package com.app.wecontrol.service.authorization;
 
-import com.app.wecontrol.repository.UserRepository;
+import com.app.wecontrol.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

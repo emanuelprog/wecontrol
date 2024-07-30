@@ -1,0 +1,43 @@
+.carousel-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel {
+  width: 60%;
+}
+
+button {
+  margin: auto;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.custom-icon {
+  font-size: 3em; /* Ajuste conforme necessário */
+  color: rgba(175, 175, 175, 0.8);
+  transition: color 0.3s, transform 0.3s;
+}
+
+.custom-icon:hover {
+  color: rgb(131, 131, 131);
+  transform: scale(1.1);
+}
+
+button:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .carousel-wrapper {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .cards {
+    display: none;
+  }
+}
