@@ -5,6 +5,8 @@ import { CommonModule, registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { LOCALE_ID } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { LoginResponse } from '../../../models/login.model';
+import { StorageService } from '../../../services/storage/storage.service';
 
 registerLocaleData(localePt, 'pt');
 @Component({
@@ -27,8 +29,13 @@ export class CardComponent {
   @Input() rules: string = '';
   
   @ViewChild('rulesModal') rulesModal!: TemplateRef<any>;
+  loginResponse: LoginResponse | undefined;
 
-  constructor(private modalService: NgbModal) {}
+  constructor(private modalService: NgbModal) {
+    const currentUserUUID = sessionStorage.getItem('currentUser');
+    
+    this.loginResponse = StorageService.getUser(currentUserUUID!).user;
+  }
 
   openRules() {
     this.modalService.open(this.rulesModal, { ariaLabelledBy: 'modal-basic-title' });

@@ -4,6 +4,8 @@ import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { MoaiService } from '../../services/moai/moai.service';
 import { MoaiResponse } from '../../models/moai.model';
 import { CardComponent } from './card/card.component';
+import { LoginResponse } from '../../models/login.model';
+import { StorageService } from '../../services/storage/storage.service';
 
 @Component({
   selector: 'app-moais',
@@ -14,8 +16,12 @@ import { CardComponent } from './card/card.component';
 })
 export class MoaisComponent implements OnInit {
   moais: MoaiResponse[] = [];
+  loginResponse: LoginResponse | undefined;
 
-  constructor(private moaiService: MoaiService) {}
+  constructor(private moaiService: MoaiService) {
+    const currentUserUUID = sessionStorage.getItem('currentUser');
+    this.loginResponse = StorageService.getUser(currentUserUUID!).user;
+  }
 
   slideConfig = {
     arrows: false,

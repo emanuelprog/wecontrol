@@ -32,7 +32,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "api/auth/confirm-email").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/auth/reset-password").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/auth/refresh-token").permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/moai").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "api/moai").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/moai/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "api/moai/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "api/moai/{id}").hasRole("ADMIN")
