@@ -19,11 +19,23 @@
     font-size: 0.875rem;
   }
 
-  i {
+  .icons {
+    padding: 0;
+    margin: 10px;
+  }
+
+  i:hover {
     color: #0D6EFD;
   }
 
-  .btnParticipate {
-    margin: 10px;
-    width: 50%;
+  @media (max-width: 768px) {
+    .btnParticipate {
+      width: 100%;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .btnParticipate {
+      width: 50%;
+    }
   }

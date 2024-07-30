@@ -10,16 +10,16 @@
       <p class="card-text">{{ status }} 
         <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': status === 'Open' ? 'green' : 'red'}" aria-hidden="true"></i>
       </p>
-      <mat-divider></mat-divider>
+      <mat-divider class="mb-2"></mat-divider>
       <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'user'">To participate</button>
       <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'admin'">See moai</button>
-      <button class="btn" (click)="openRules()" matTooltip="See rules">
+      <button class="btn icons" (click)="openRules()" matTooltip="See rules">
         <i class="fa fa-book fa-lg" aria-hidden="true"></i>
       </button>
-      <button class="btn" matTooltip="Edit moai" *ngIf="loginResponse?.role == 'admin'">
+      <button class="btn icons" matTooltip="Edit moai" *ngIf="loginResponse?.role == 'admin'">
         <i class="fa fa-pencil" aria-hidden="true"></i>
       </button>
-      <button class="btn" matTooltip="Delete moai" *ngIf="loginResponse?.role == 'admin'">
+      <button class="btn icons" matTooltip="Delete moai" *ngIf="loginResponse?.role == 'admin'">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
       <p class="card-text"></p>
