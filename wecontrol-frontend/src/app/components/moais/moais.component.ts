@@ -1,26 +1,37 @@
-import { NgForOf } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, NgForOf } from '@angular/common';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SlickCarouselModule } from 'ngx-slick-carousel';
 import { MoaiService } from '../../services/moai/moai.service';
 import { MoaiResponse } from '../../models/moai.model';
 import { CardComponent } from './card/card.component';
 import { LoginResponse } from '../../models/login.model';
 import { StorageService } from '../../services/storage/storage.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-moais',
   standalone: true,
-  imports: [SlickCarouselModule, NgForOf, CardComponent],
+  imports: [SlickCarouselModule, NgForOf, CardComponent, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './moais.component.html',
   styleUrl: './moais.component.scss'
 })
 export class MoaisComponent implements OnInit {
   moais: MoaiResponse[] = [];
   loginResponse: LoginResponse | undefined;
+  @ViewChild('createMoaiModal') createMoaiModal!: TemplateRef<any>;
+  moaiForm: FormGroup;
 
-  constructor(private moaiService: MoaiService) {
+  constructor(private moaiService: MoaiService, private modalService: NgbModal, private fb: FormBuilder, private snackBar: MatSnackBar) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
+
+    this.moaiForm = this.fb.group({
+      name: ['', Validators.required],
+      value: ['', Validators.required],
+      year: ['', Validators.required]
+    });
   }
 
   slideConfig = {
@@ -49,13 +60,17 @@ export class MoaisComponent implements OnInit {
   }
 
 
-  createMoai() {
-    // const createJson = {
-    //   login: registerForm.get('login')?.value,
-    //   password: registerForm.get('password')?.value,
-    //   role: registerForm.get('role')?.value,
-    //   name: registerForm.get('name')?.value,
-    //   email: registerForm.get('email')?.value
-    // }
+  openCreateMoaiModal() {
+    this.moaiForm.reset();
+    this.modalService.open(this.createMoaiModal, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  onSubmit() {
+    if (this.moaiForm.invalid) {
+      this.moaiForm.markAllAsTouched();
+    }
+    console.log('New Moai:', this.moaiForm);
+    // Aqui você pode adicionar a lógica para enviar os dados do novo Moai para o servidor
+    this.modalService.dismissAll();
   }
 }
