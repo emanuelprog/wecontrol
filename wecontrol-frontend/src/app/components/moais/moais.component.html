@@ -3,22 +3,29 @@
         <button class="btn btn-primary" *ngIf="loginResponse?.role == 'admin'" (click)="openCreateMoaiModal()">Create New Moai</button>
     </div>
     <div class="carousel-wrapper">
-      <button class="arrow" (click)="slickModal.slickPrev()"><i class="fa fa-chevron-left custom-icon" aria-hidden="true"></i></button>
-      <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
-        <div ngxSlickItem *ngFor="let moai of moais">
+        <button class="arrow" (click)="slickModal.slickPrev()" *ngIf="moais.length > 0">
+          <i class="fa fa-chevron-left custom-icon" aria-hidden="true"></i>
+        </button>
+        <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
+          <div ngxSlickItem *ngFor="let moai of moais">
             <app-card 
-            [name]="moai.name" 
-            [value]="moai.value" 
-            [year]="moai.year" 
-            [duration]="moai.duration"
-            [status]="moai.status"
-            [organizer]="moai.userName" 
-            [rules]="moai.rules">
+              [name]="moai.name" 
+              [value]="moai.value" 
+              [year]="moai.year" 
+              [duration]="moai.duration"
+              [status]="moai.status"
+              [organizer]="moai.userName" 
+              [rules]="moai.rules"
+              [createdAt]="moai.createdAt"
+              (edit)="onEditMoai(moai)"
+              (delete)="openConfirmDeleteModal(moai, confirmDelete)">
             </app-card>
-        </div>
-      </ngx-slick-carousel>
-      <button class="arrow" (click)="slickModal.slickNext()"><i class="fa fa-chevron-right custom-icon" aria-hidden="true"></i></button>
-    </div>
+          </div>
+        </ngx-slick-carousel>
+        <button class="arrow" (click)="slickModal.slickNext()" *ngIf="moais.length > 0">
+          <i class="fa fa-chevron-right custom-icon" aria-hidden="true"></i>
+        </button>
+      </div>
     <div class="cards">
           <div *ngFor="let moai of moais">
               <app-card 
@@ -28,7 +35,10 @@
               [duration]="moai.duration"
               [status]="moai.status"
               [organizer]="moai.userName" 
-              [rules]="moai.rules">
+              [rules]="moai.rules"
+              [createdAt]="moai.createdAt"
+              (edit)="onEditMoai(moai)"
+              (delete)="openConfirmDeleteModal(moai, confirmDelete)">
               </app-card>
           </div>
     </div>
@@ -46,16 +56,51 @@
         </div>
         <div class="mb-3">
           <label for="moaiValue" class="form-label">Value</label>
-          <input type="text" class="form-control" id="moaiValue" formControlName="value" required>
+          <input type="text" class="form-control" id="moaiValue" formControlName="value" required (input)="mascaraMoeda($event)">
         </div>
         <div class="mb-3">
           <label for="moaiYear" class="form-label">Year</label>
-          <input type="text" class="form-control" id="moaiYear" formControlName="year" required>
+          <input type="text" class="form-control" id="moaiYear" [ngModel]="currentYear" [ngModelOptions]="{standalone: true}" required (input)="filterInput($event, 'year')" maxlength="4" readonly>
+        </div>
+        <div class="mb-3">
+          <label for="moaiRules" class="form-label">Rules</label>
+          <textarea class="form-control" id="moaiRules" formControlName="rules" required rows="2" cols="50"></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="moaiDuration" class="form-label">Duration</label>
+            <div class="custom-select-wrapper">
+                <select class="form-control custom-select" id="moaiDuration" formControlName="duration" required>
+                    <option value="" disabled selected>Select duration</option>
+                    <option *ngFor="let duration of durations" [value]="duration">{{ duration }}</option>
+                </select>
+                <span class="custom-select-icon">&#9660;</span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="moaiBidStartDate" class="form-label">Bid Start Date</label>
+            <input type="date" class="form-control" id="moaiBidStartDate" formControlName="bidStartDate" required>
+        </div>
+        <div class="mb-3">
+            <label for="moaiBidEndDate" class="form-label">Bid End Date</label>
+            <input type="date" class="form-control" id="moaiBidEndDate" formControlName="bidEndDate" required>
         </div>
         <div style="display: flex; justify-content: space-between;">
-            <button type="submit" class="btn btn-primary">Create</button>
-            <button type="submit" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+            <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{ isEdit ? 'Save' : 'Create' }}</button>
+            <button type="submit" class="btn btn-secondary" (click)="closeModal()">Close</button>
         </div>
       </form>
+    </div>
+  </ng-template>
+
+  <ng-template #confirmDelete let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Confirm Delete</h4>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this Moai?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="deleteConfirmed(modal)">Delete</button>
     </div>
   </ng-template>

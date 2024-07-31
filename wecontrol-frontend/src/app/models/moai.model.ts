@@ -8,6 +8,7 @@ export interface MoaiResponse {
   status: string,
   userId: string,
   userName: string
+  createdAt: string;
 }
 
 export class MoaiResponse implements MoaiResponse {
@@ -20,7 +21,8 @@ export class MoaiResponse implements MoaiResponse {
       public duration: string,
       public status: string,
       public userId: string,
-      public userName: string
+      public userName: string,
+      public createdAt: string
       ) { }
   }
 

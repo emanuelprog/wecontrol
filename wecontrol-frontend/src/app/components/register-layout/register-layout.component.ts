@@ -44,7 +44,7 @@ export class RegisterLayoutComponent {
       this.authService.register(this.registerForm).subscribe({
         next: data => {
           if (data.body) {
-            this.onMessage('Successfully registered user!', '', 2000);
+            this.onMessage(data.body.message, '', 2000);
             this.router.navigate(['/login']);
           }
         },

@@ -16,9 +16,9 @@ public class MoaiController {
 
     private final MoaiService moaiService;
 
-    @GetMapping
-    public ResponseEntity<DefaultResponse> findAll() {
-        return ResponseUtil.generateResponse("Moais successfully found!", HttpStatus.OK, moaiService.getMoais());
+    @GetMapping("/{id}")
+    public ResponseEntity<DefaultResponse> findAll(@PathVariable String id) {
+        return ResponseUtil.generateResponse("Moais loaded successfully!", HttpStatus.OK, moaiService.getMoais(id));
     }
 
     @PostMapping("/create")

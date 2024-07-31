@@ -3,7 +3,7 @@
       {{ name }}
     </div>
     <div class="card-body">
-      <h5 class="card-title">{{ value | currency:'USD':'symbol' }}</h5>
+      <h5 class="card-title">{{ value }}</h5>
       <mat-divider></mat-divider>
       <p class="card-text">Year: {{ year }}</p>
       <p class="card-text">Duration: {{ duration }}</p>
@@ -11,21 +11,23 @@
         <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': status === 'Open' ? 'green' : 'red'}" aria-hidden="true"></i>
       </p>
       <mat-divider class="mb-2"></mat-divider>
-      <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'user'">To participate</button>
-      <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'admin'">See moai</button>
-      <button class="btn icons" (click)="openRules()" matTooltip="See rules">
-        <i class="fa fa-book fa-lg" aria-hidden="true"></i>
-      </button>
-      <button class="btn icons" matTooltip="Edit moai" *ngIf="loginResponse?.role == 'admin'">
-        <i class="fa fa-pencil" aria-hidden="true"></i>
-      </button>
-      <button class="btn icons" matTooltip="Delete moai" *ngIf="loginResponse?.role == 'admin'">
-        <i class="fa fa-trash" aria-hidden="true"></i>
-      </button>
-      <p class="card-text"></p>
+      <div>
+        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'user'">To participate</button>
+        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'admin'">See moai</button>
+        <button class="btn icons" (click)="openRules()" matTooltip="See rules">
+          <i class="fa fa-book fa-lg" aria-hidden="true"></i>
+        </button>
+        <button class="btn icons" matTooltip="Edit moai" *ngIf="loginResponse?.role == 'admin'" (click)="onEdit()">
+          <i class="fa fa-pencil" aria-hidden="true"></i>
+        </button>
+        <button class="btn icons" matTooltip="Delete moai" *ngIf="loginResponse?.role == 'admin'" (click)="onDelete()">
+          <i class="fa fa-trash" aria-hidden="true"></i>
+        </button>
+      </div>
     </div>
-    <div class="card-footer text-muted">
-      Organized by: {{ organizer }}
+    <div class="card-footer text-muted" style="display: flex; justify-content: space-between;">
+      <span>Organized by: {{ organizer }}</span>
+      <span>Created At: {{ createdAt }}</span>
     </div>
   </div>
   

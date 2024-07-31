@@ -78,3 +78,24 @@
 .ng-invalid.ng-touched {
   border-color: red;
 }
+
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.custom-select {
+  width: 100%;
+  appearance: none;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.custom-select-icon {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  pointer-events: none;
+}

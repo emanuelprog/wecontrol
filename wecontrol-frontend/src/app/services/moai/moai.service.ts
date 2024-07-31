@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MoaiResponse } from '../../models/moai.model';
 import { StorageService } from '../storage/storage.service';
+import { LoginResponse } from '../../models/login.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,16 +14,33 @@ export class MoaiService {
 
   constructor(private httpClient: HttpClient) { }
 
-  findAll(): Observable<HttpResponse<any>> {
+  findAll(id: string): Observable<HttpResponse<any>> {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
     });
     
-    return this.httpClient.get<any>(this.baseUrl, { headers: headers, observe: 'response' });
+    return this.httpClient.get<any>(this.baseUrl + `/${id}`, { headers: headers, observe: 'response' });
   }
 
-  create(createJson: Object): Observable<HttpResponse<MoaiResponse>> {
-    return this.httpClient.post<MoaiResponse>(this.baseUrl + '/create', createJson, { observe: 'response'});
+  create(createJson: any): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+    return this.httpClient.post<any>(this.baseUrl + '/create', createJson, { headers: headers, observe: 'response'});
+  }
+
+  edit(editJson: any): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+    return this.httpClient.put<any>(this.baseUrl + `/${editJson.id}`, editJson, { headers: headers, observe: 'response'});
+  }
+
+  delete(id: string): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+    return this.httpClient.delete<any>(this.baseUrl + `/${id}`, { headers: headers, observe: 'response'});
   }
   
 }

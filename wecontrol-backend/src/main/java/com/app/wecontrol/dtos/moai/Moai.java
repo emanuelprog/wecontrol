@@ -1,12 +1,13 @@
 package com.app.wecontrol.dtos.moai;
 
 import com.app.wecontrol.dtos.login.LoginResponseDTO;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Document(collection = "moais")
 @Data
@@ -23,8 +24,12 @@ public class Moai {
     private String duration;
     private String status;
     private LoginResponseDTO organizer;
+    @CreatedDate
+    private LocalDateTime createdAt;
+    private Date bidStartDate;
+    private Date bidEndDate;
 
-    public Moai(String name, String value, String year, String rules, String duration, String status, LoginResponseDTO organizer) {
+    public Moai(String name, String value, String year, String rules, String duration, String status, LoginResponseDTO organizer, LocalDateTime createdAt, Date bidStartDate, Date bidEndDate) {
         this.name = name;
         this.value = value;
         this.year = year;
@@ -32,5 +37,8 @@ public class Moai {
         this.duration = duration;
         this.status = status;
         this.organizer = organizer;
+        this.createdAt = createdAt;
+        this.bidStartDate = bidStartDate;
+        this.bidEndDate = bidEndDate;
     }
 }
