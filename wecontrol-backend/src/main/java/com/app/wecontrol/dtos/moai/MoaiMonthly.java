@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Document(collection = "moais-monthly")
 @Data
@@ -21,7 +22,6 @@ public class MoaiMonthly {
     private String month;
     private LocalDateTime bidStartDate;
     private LocalDateTime bidEndDate;
-    private String highestBid;
-    private String idHighestBidderUser;
+    private List<BidDTO> bids;
     private String status;
 }

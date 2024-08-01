@@ -3,8 +3,6 @@ package com.app.wecontrol.service.moai;
 import com.app.wecontrol.dtos.moai.Moai;
 import com.app.wecontrol.dtos.moai.MoaiMonthly;
 import com.app.wecontrol.dtos.moai.MoaiMonthlyResponseDTO;
-import com.app.wecontrol.dtos.moai.MoaiResponseDTO;
-import com.app.wecontrol.dtos.user.User;
 import com.app.wecontrol.exception.BadRequestException;
 import com.app.wecontrol.repository.moai.MoaiMonthlyRepository;
 import com.app.wecontrol.repository.moai.MoaiRepository;
@@ -12,12 +10,9 @@ import com.app.wecontrol.utils.MoaiUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,8 +41,7 @@ public class MoaiMonthlyService {
                         moaiMonthly.getMonth(),
                         moaiUtils.convertLocalDateTimeToString(moaiMonthly.getBidStartDate().plusDays(1).plusHours(4)),
                         moaiUtils.convertLocalDateTimeToString(moaiMonthly.getBidEndDate().plusHours(4)),
-                        moaiMonthly.getHighestBid(),
-                        moaiMonthly.getIdHighestBidderUser(),
+                        moaiMonthly.getBids(),
                         moaiMonthly.getStatus()
                 ))
                 .collect(Collectors.toList());
@@ -59,8 +53,7 @@ public class MoaiMonthlyService {
     }
 
     public void update(Moai moai, int oldDuration, int newDuration) {
-        List<MoaiMonthly> moaiMonthlyList = createMoaiMonthly(moai);
-        moaiMonthlyRepository.saveAll(moaiMonthlyList);
+        updateMoaiMonthly(moai, oldDuration, newDuration);
     }
 
     private List<MoaiMonthly> createMoaiMonthly(Moai moai) {
@@ -83,8 +76,7 @@ public class MoaiMonthlyService {
                     moaiMonthly.setMonth(month);
                     moaiMonthly.setBidStartDate(bidStartDate);
                     moaiMonthly.setBidEndDate(bidEndDate);
-                    moaiMonthly.setHighestBid(null);
-                    moaiMonthly.setIdHighestBidderUser(null);
+                    moaiMonthly.setBids(null);
                     moaiMonthly.setStatus(monthDate.getMonthValue() == currentDate.getMonthValue() && monthDate.getYear() == currentDate.getYear() ? "Open" : "Closed");
 
                     return moaiMonthly;
@@ -100,7 +92,7 @@ public class MoaiMonthlyService {
             List<MoaiMonthly> moaiMonthlyList = moaiMonthlyRepository.findByIdMoai(moai.getId());
             List<MoaiMonthly> toDelete = moaiMonthlyList.subList(newDuration, moaiMonthlyList.size())
                     .stream()
-                    .filter(moaiMonthly -> moaiMonthly.getIdHighestBidderUser() == null)
+                    .filter(moaiMonthly -> moaiMonthly.getBids() == null)
                     .collect(Collectors.toList());
             moaiMonthlyRepository.deleteAll(toDelete);
         }

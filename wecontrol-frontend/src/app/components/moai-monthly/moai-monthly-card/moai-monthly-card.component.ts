@@ -16,5 +16,6 @@ export class MoaiMonthlyCardComponent {
   @Input() highestBidUser: string = '';
   @Input() status: string = '';
   @Input() disabled: boolean = false;
+  @Input() role: string | undefined;
   currentDate: Date | undefined;
 }

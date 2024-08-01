@@ -6,6 +6,8 @@ import { MoaiMonthlyService } from '../../services/moai/moai-monthly.service';
 import { MoaiResponse } from '../../models/moai.model';
 import { MoaiMonthlyCardComponent } from './moai-monthly-card/moai-monthly-card.component';
 import { CommonModule, NgForOf } from '@angular/common';
+import { LoginResponse } from '../../models/login.model';
+import { StorageService } from '../../services/storage/storage.service';
 
 @Component({
   selector: 'app-moai-monthly',
@@ -15,9 +17,13 @@ import { CommonModule, NgForOf } from '@angular/common';
   styleUrl: './moai-monthly.component.scss'
 })
 export class MoaiMonthlyComponent implements OnInit {
+  loginResponse: LoginResponse | undefined;
   moaiMonthlys: MoaiMonthlyResponse[] = [];
   moai: MoaiResponse | undefined;
-  constructor(private route: Router, private moaiMonthlyService: MoaiMonthlyService) { }
+  constructor(private route: Router, private moaiMonthlyService: MoaiMonthlyService) {
+    const currentUserUUID = sessionStorage.getItem('currentUser');
+    this.loginResponse = StorageService.getUser(currentUserUUID!).user;
+   }
 
   ngOnInit(): void {
     if (history.state && history.state.data) {
