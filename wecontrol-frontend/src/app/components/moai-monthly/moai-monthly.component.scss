@@ -1,0 +1,29 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.main-container {
+  width: 100%;
+  text-align: center;
+}
+
+.header {
+  display: flex;
+  justify-content: flex-start;
+  padding: 20px;
+}
+
+.header button {
+  padding: 5px 30px;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 20px auto;
+}

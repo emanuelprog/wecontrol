@@ -8,18 +8,21 @@
         </button>
         <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
           <div ngxSlickItem *ngFor="let moai of moais">
-            <app-card 
+            <app-moai-card 
               [name]="moai.name" 
               [value]="moai.value" 
               [year]="moai.year" 
               [duration]="moai.duration"
+              [participants]="moai.participants"
               [status]="moai.status"
               [organizer]="moai.userName" 
               [rules]="moai.rules"
               [createdAt]="moai.createdAt"
               (edit)="onEditMoai(moai)"
-              (delete)="openConfirmDeleteModal(moai, confirmDelete)">
-            </app-card>
+              (delete)="openConfirmDeleteModal(moai, confirmDelete)"
+              (view)="onViewMoai(moai)"
+              (participate)="onParticipateMoai(moai)">
+            </app-moai-card>
           </div>
         </ngx-slick-carousel>
         <button class="arrow" (click)="slickModal.slickNext()" *ngIf="moais.length > 0">
@@ -28,7 +31,7 @@
       </div>
     <div class="cards">
           <div *ngFor="let moai of moais">
-              <app-card 
+              <app-moai-card 
               [name]="moai.name" 
               [value]="moai.value" 
               [year]="moai.year" 
@@ -38,8 +41,9 @@
               [rules]="moai.rules"
               [createdAt]="moai.createdAt"
               (edit)="onEditMoai(moai)"
-              (delete)="openConfirmDeleteModal(moai, confirmDelete)">
-              </app-card>
+              (delete)="openConfirmDeleteModal(moai, confirmDelete)"
+              (view)="onViewMoai(moai)">
+              </app-moai-card>
           </div>
     </div>
 </div>
@@ -75,14 +79,6 @@
                 </select>
                 <span class="custom-select-icon">&#9660;</span>
             </div>
-        </div>
-        <div class="mb-3">
-            <label for="moaiBidStartDate" class="form-label">Bid Start Date</label>
-            <input type="date" class="form-control" id="moaiBidStartDate" formControlName="bidStartDate" required>
-        </div>
-        <div class="mb-3">
-            <label for="moaiBidEndDate" class="form-label">Bid End Date</label>
-            <input type="date" class="form-control" id="moaiBidEndDate" formControlName="bidEndDate" required>
         </div>
         <div style="display: flex; justify-content: space-between;">
             <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{ isEdit ? 'Save' : 'Create' }}</button>

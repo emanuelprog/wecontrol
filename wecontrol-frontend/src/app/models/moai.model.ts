@@ -1,3 +1,5 @@
+import { MoaiParticipantResponse } from "./moai-participant.model";
+
 export interface MoaiResponse {
   id: string,
   name: string,
@@ -7,8 +9,9 @@ export interface MoaiResponse {
   duration: string,
   status: string,
   userId: string,
-  userName: string
-  createdAt: string;
+  userName: string,
+  createdAt: string,
+  participants: MoaiParticipantResponse[]
 }
 
 export class MoaiResponse implements MoaiResponse {
@@ -22,7 +25,8 @@ export class MoaiResponse implements MoaiResponse {
       public status: string,
       public userId: string,
       public userName: string,
-      public createdAt: string
+      public createdAt: string,
+      public participants: MoaiParticipantResponse[]
       ) { }
   }
 

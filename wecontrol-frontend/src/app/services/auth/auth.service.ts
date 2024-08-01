@@ -20,6 +20,7 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private ngZone: NgZone, private snackBar: MatSnackBar, private router: Router) {
     this.initStorageEventListener();
     this.initActivityListeners();
+    
   }
 
   login(login: string, password: string): Observable<HttpResponse<any>> {
@@ -72,6 +73,7 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
+    console.log("bateu aqui");
     const currentUserUUID = sessionStorage.getItem('currentUser');
     if (!currentUserUUID) {
       this.logout();

@@ -7,13 +7,18 @@
       <mat-divider></mat-divider>
       <p class="card-text">Year: {{ year }}</p>
       <p class="card-text">Duration: {{ duration }}</p>
+      <p class="card-text">
+        <button class="btn icons" style="margin: 0; padding: 0;">
+          <i class="fa fa-user" aria-hidden="true" matTooltip="Participants" (click)="openParticipantsModal()"></i>
+        </button> {{ participants.length }}
+      </p>
       <p class="card-text">{{ status }} 
         <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': status === 'Open' ? 'green' : 'red'}" aria-hidden="true"></i>
       </p>
       <mat-divider class="mb-2"></mat-divider>
       <div>
-        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'user'">To participate</button>
-        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'admin'">See moai</button>
+        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'user' && !isParticipant()" [disabled]="status !== 'Open'" (click)="onParticipate()">To participate</button>
+        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'admin' || isParticipant()" (click)="onView()">See moai</button>
         <button class="btn icons" (click)="openRules()" matTooltip="See rules">
           <i class="fa fa-book fa-lg" aria-hidden="true"></i>
         </button>
@@ -37,6 +42,20 @@
     </div>
     <div class="modal-body">
       <p>{{ rules }}</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+    </div>
+  </ng-template>
+
+  <ng-template #participantsModal let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Participants</h4>
+    </div>
+    <div class="modal-body">
+      <ul>
+        <li *ngFor="let moaiParticipant of participants">{{ moaiParticipant.participant.name }}</li>
+      </ul>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>

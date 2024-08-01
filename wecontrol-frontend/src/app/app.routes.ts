@@ -5,6 +5,7 @@ import { LoggedComponent } from './components/logged/logged.component';
 import { AuthGuard } from './guard/auth.guard';
 import { ForgotPasswordLayoutComponent } from './components/forgot-password-layout/forgot-password-layout.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { MoaiMonthlyComponent } from './components/moai-monthly/moai-monthly.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginLayoutComponent },
@@ -12,6 +13,7 @@ export const routes: Routes = [
   { path: 'logged', component: LoggedComponent, canActivate: [AuthGuard] },
   { path: 'forgot-password', component: ForgotPasswordLayoutComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+  { path: 'moai-monthly', component: MoaiMonthlyComponent, canActivate: [AuthGuard] },
   { path: '', redirectTo: '/login', pathMatch: 'full' }
 ];
 

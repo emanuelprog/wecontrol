@@ -26,10 +26,8 @@ public class Moai {
     private LoginResponseDTO organizer;
     @CreatedDate
     private LocalDateTime createdAt;
-    private Date bidStartDate;
-    private Date bidEndDate;
 
-    public Moai(String name, String value, String year, String rules, String duration, String status, LoginResponseDTO organizer, LocalDateTime createdAt, Date bidStartDate, Date bidEndDate) {
+    public Moai(String name, String value, String year, String rules, String duration, String status, LoginResponseDTO organizer, LocalDateTime createdAt) {
         this.name = name;
         this.value = value;
         this.year = year;
@@ -38,7 +36,5 @@ public class Moai {
         this.status = status;
         this.organizer = organizer;
         this.createdAt = createdAt;
-        this.bidStartDate = bidStartDate;
-        this.bidEndDate = bidEndDate;
     }
 }

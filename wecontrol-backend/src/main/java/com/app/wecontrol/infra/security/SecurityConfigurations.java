@@ -32,6 +32,8 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.POST, "api/moai/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "api/moai/{id}").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "api/moai/{id}").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "api/moai-monthly/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "api/moai-participant/create").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

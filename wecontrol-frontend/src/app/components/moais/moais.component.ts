@@ -3,17 +3,19 @@ import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SlickCarouselComponent, SlickCarouselModule } from 'ngx-slick-carousel';
 import { MoaiService } from '../../services/moai/moai.service';
 import { MoaiResponse } from '../../models/moai.model';
-import { CardComponent } from './card/card.component';
+import { MoaiCardComponent } from './moai-card/moai-card.component';
 import { LoginResponse } from '../../models/login.model';
 import { StorageService } from '../../services/storage/storage.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { MoaiParticipantService } from '../../services/moai/moai-participant.service';
 
 @Component({
   selector: 'app-moais',
   standalone: true,
-  imports: [SlickCarouselModule, NgForOf, CardComponent, CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [SlickCarouselModule, NgForOf, MoaiCardComponent, CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './moais.component.html',
   styleUrl: './moais.component.scss'
 })
@@ -28,9 +30,15 @@ export class MoaisComponent implements OnInit {
   moaiForm: FormGroup;
   isEdit: boolean = false;
   currentYear: string;
-  statusMoai: string | undefined;
 
-  constructor(private moaiService: MoaiService, private modalService: NgbModal, private fb: FormBuilder, private snackBar: MatSnackBar) {
+  constructor(
+    private moaiService: MoaiService, 
+    private modalService: NgbModal, 
+    private fb: FormBuilder, 
+    private snackBar: MatSnackBar, 
+    private route: Router, 
+    private moaiParticipantService: MoaiParticipantService
+    ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
     this.currentYear = new Date().getFullYear().toString();
@@ -40,9 +48,7 @@ export class MoaisComponent implements OnInit {
       value: ['', Validators.required],
       rules: ['', Validators.required],
       status: ['Open'],
-      duration: ['', Validators.required],
-      bidStartDate: [null, Validators.required],
-      bidEndDate: [null, Validators.required]
+      duration: ['', Validators.required]
     });
   }
 
@@ -65,7 +71,6 @@ export class MoaisComponent implements OnInit {
         if (data.body) {
           this.slickModal.unslick();
           this.moais = data.body.body;
-          
         }
       },
       error: (err: any) => {
@@ -106,9 +111,7 @@ export class MoaisComponent implements OnInit {
       rules: this.moaiForm.get('rules')?.value,
       duration: this.moaiForm.get('duration')?.value,
       status: 'Open',
-      organizer: this.loginResponse,
-      bidStartDate: this.moaiForm.get('bidStartDate')?.value,
-      bidEndDate: this.moaiForm.get('bidEndDate')?.value
+      organizer: this.loginResponse
     }
     this.moaiService.create(createJson).subscribe({
       next: data => {
@@ -163,6 +166,27 @@ export class MoaisComponent implements OnInit {
     this.currentYear = moai.year;
     this.durations = Array.from({ length: 12 }, (_, i) => `${i + 1} Month${i + 1 > 1 ? 's' : ''}`);
     this.modalService.open(this.createMoaiModal, { ariaLabelledBy: 'modal-basic-title', backdrop: 'static' });
+  }
+
+  onViewMoai(moai: MoaiResponse) {
+    this.route.navigate(['/moai-monthly'], { state: { data: moai } });
+  }
+
+  onParticipateMoai(moai: MoaiResponse) {
+    const participantJson = {
+      participant: this.loginResponse,
+      idMoai: moai.id
+    }
+    this.moaiParticipantService.create(participantJson).subscribe({
+      next: data => {
+        if (data.body) {
+          this.onMessage(data.body.message + ` ${moai.name}.`, '', 2000);
+        }
+      },
+      error: (err: any) => {
+        this.onMessage(err.error.message, '', 2000);
+      }
+    })
   }
 
   openConfirmDeleteModal(moai: MoaiResponse, modal: TemplateRef<any>) {

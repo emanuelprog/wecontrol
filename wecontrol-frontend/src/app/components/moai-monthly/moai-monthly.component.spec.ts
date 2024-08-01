@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CardComponent } from './card.component';
+import { MoaiMonthlyComponent } from './moai-monthly.component';
 
-describe('CardComponent', () => {
-  let component: CardComponent;
-  let fixture: ComponentFixture<CardComponent>;
+describe('MoaiMonthlyComponent', () => {
+  let component: MoaiMonthlyComponent;
+  let fixture: ComponentFixture<MoaiMonthlyComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CardComponent]
+      imports: [MoaiMonthlyComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(CardComponent);
+    fixture = TestBed.createComponent(MoaiMonthlyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
