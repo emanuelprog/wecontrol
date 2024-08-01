@@ -9,6 +9,7 @@
       <p class="card-text" *ngIf="highestBid">Highest Bid: {{ highestBid }}</p>
       <p class="card-text" *ngIf="highestBidUser">Highest Bid User: {{ highestBidUser }}</p>
       <button class="btn btn-primary" [disabled]="disabled" *ngIf="role != 'admin'">Bid</button>
+      <button class="btn btn-primary" *ngIf="role == 'admin' && highestBid">View bids</button>
     </div>
     <div class="card-footer text-muted">
       <p class="card-text text-danger" *ngIf="!highestBid">No bids yet</p>
