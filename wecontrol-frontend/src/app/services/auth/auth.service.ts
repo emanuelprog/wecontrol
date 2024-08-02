@@ -73,7 +73,6 @@ export class AuthService {
   }
 
   refreshToken(): Observable<any> {
-    console.log("bateu aqui");
     const currentUserUUID = sessionStorage.getItem('currentUser');
     if (!currentUserUUID) {
       this.logout();
