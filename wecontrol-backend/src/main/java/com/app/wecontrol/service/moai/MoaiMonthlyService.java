@@ -6,7 +6,7 @@ import com.app.wecontrol.dtos.bid.BidResponseDTO;
 import com.app.wecontrol.dtos.moai.*;
 import com.app.wecontrol.exception.BadRequestException;
 import com.app.wecontrol.exception.NotFoundException;
-import com.app.wecontrol.repository.moai.BidRepository;
+import com.app.wecontrol.repository.bid.BidRepository;
 import com.app.wecontrol.repository.moai.MoaiMonthlyRepository;
 import com.app.wecontrol.repository.moai.MoaiRepository;
 import com.app.wecontrol.utils.MoaiUtils;

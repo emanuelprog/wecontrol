@@ -1,4 +1,4 @@
-package com.app.wecontrol.repository.moai;
+package com.app.wecontrol.repository.bid;
 
 import com.app.wecontrol.dtos.bid.Bid;
 import org.springframework.data.mongodb.repository.Aggregation;
