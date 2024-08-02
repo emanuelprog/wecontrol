@@ -32,17 +32,17 @@ export class MoaisComponent implements OnInit {
   currentYear: string;
 
   constructor(
-    private moaiService: MoaiService, 
-    private modalService: NgbModal, 
-    private fb: FormBuilder, 
-    private snackBar: MatSnackBar, 
-    private route: Router, 
+    private moaiService: MoaiService,
+    private modalService: NgbModal,
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private route: Router,
     private moaiParticipantService: MoaiParticipantService
     ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
     this.currentYear = new Date().getFullYear().toString();
-    
+
     this.moaiForm = this.fb.group({
       name: ['', Validators.required],
       value: ['', Validators.required],
@@ -181,6 +181,7 @@ export class MoaisComponent implements OnInit {
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message + ` ${moai.name}.`, '', 2000);
+          this.findMoais();
         }
       },
       error: (err: any) => {
@@ -228,7 +229,7 @@ export class MoaisComponent implements OnInit {
     const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
     this.moaiForm.get('value')?.setValue(this.mascaraCurrency(digitsFloat));
   }
-  
+
   mascaraCurrency(valor: string, locale: string = 'en-US', currency: string = 'USD'): string {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
