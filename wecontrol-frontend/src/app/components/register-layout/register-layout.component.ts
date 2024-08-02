@@ -10,6 +10,13 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
   const confirmPassword = control.get('confirmPassword');
   return password && confirmPassword && password.value === confirmPassword.value ? null : { 'passwordMismatch': true };
 };
+export function noWhitespaceValidator(): ValidatorFn {
+  return (control: AbstractControl): { [key: string]: any } | null => {
+    const isWhitespace = (control.value || '').trim().length === 0;
+    const isValid = !isWhitespace;
+    return isValid ? null : { whitespace: true };
+  };
+};
 @Component({
   selector: 'app-register-layout',
   standalone: true,
@@ -24,11 +31,11 @@ export class RegisterLayoutComponent {
 
   constructor(private fb: FormBuilder, private snackBar: MatSnackBar, private router: Router, private authService: AuthService) {
     this.registerForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', Validators.required],
-      login: ['', Validators.required],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+      name: ['', [Validators.required, noWhitespaceValidator()]],
+      email: ['', [Validators.required, noWhitespaceValidator(), Validators.email]],
+      login: ['', [Validators.required, noWhitespaceValidator()]],
+      password: ['', [Validators.required, Validators.minLength(6), noWhitespaceValidator()]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6), noWhitespaceValidator()]],
       role: ['USER']
     }, { validators: passwordMatchValidator });
   }

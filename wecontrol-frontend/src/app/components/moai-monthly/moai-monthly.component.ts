@@ -21,16 +21,19 @@ import { BidResponse } from '../../models/bid.model';
   styleUrl: './moai-monthly.component.scss'
 })
 export class MoaiMonthlyComponent implements OnInit {
-  loginResponse: LoginResponse | undefined;
-  moaiMonthlys: MoaiMonthlyResponse[] = [];
-  moai: MoaiResponse | undefined;
-  bidForm: FormGroup;
   @ViewChild('bidModal') bidModal!: TemplateRef<any>;
+  moaiMonthlys: MoaiMonthlyResponse[] = [];
+  
+  bidForm: FormGroup;
+
+  loginResponse: LoginResponse | undefined;
+  moai: MoaiResponse | undefined;
   modalRef: NgbModalRef | undefined;
   moaiMonthly: MoaiMonthlyResponse | undefined;
+  bidDelete: BidResponse | undefined;
+  
   min: number | undefined;
   isEdit: boolean = false;
-  bidDelete: BidResponse | undefined;
 
   constructor(
     private route: Router, 

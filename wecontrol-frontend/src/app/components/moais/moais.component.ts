@@ -11,9 +11,7 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MoaiParticipantService } from '../../services/moai/moai-participant.service';
-import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-moais',
@@ -25,20 +23,19 @@ import { MatSort } from '@angular/material/sort';
 export class MoaisComponent implements OnInit {
   @ViewChild('slickModal', { static: false }) slickModal!: SlickCarouselComponent;
   @ViewChild('createMoaiModal') createMoaiModal!: TemplateRef<any>;
+  @ViewChild('paginator') paginator!: MatPaginator;
+
   moais: MoaiResponse[] = [];
   durations: string[] = [];
+  currentItemsToShow: MoaiResponse[] = [];
+
   loginResponse: LoginResponse | undefined;
   moaiEdit: MoaiResponse | undefined;
   moaiDelete: MoaiResponse | null = null;
   moaiForm: FormGroup;
+
   isEdit: boolean = false;
   currentYear: string;
-  @ViewChild('paginator') paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
-  currentItemsToShow: MoaiResponse[] = [];
-
-  pageSize = 10;
-  pageIndex = 0;
 
   constructor(
     private moaiService: MoaiService,
@@ -48,8 +45,7 @@ export class MoaisComponent implements OnInit {
     private route: Router,
     private moaiParticipantService: MoaiParticipantService
     ) {
-    const currentUserUUID = sessionStorage.getItem('currentUser');
-    this.loginResponse = StorageService.getUser(currentUserUUID!).user;
+    this.loginResponse = StorageService.getUser(sessionStorage.getItem('currentUser')!).user;
     this.currentYear = new Date().getFullYear().toString();
 
     this.moaiForm = this.fb.group({
@@ -78,11 +74,9 @@ export class MoaisComponent implements OnInit {
     })
   }
 
-
   onPageChange($event: { pageIndex?: any; pageSize?: any; }) {
     this.currentItemsToShow = this.moais.slice($event.pageIndex * $event.pageSize, $event.pageIndex * $event.pageSize + $event.pageSize);
   }
-
 
   openCreateMoaiModal() {
     this.moaiForm.reset();
@@ -245,7 +239,7 @@ export class MoaisComponent implements OnInit {
     this.moaiForm.controls[controlName].setValue(input.value);
   }
 
-  mascaraMoeda(event: any): void {
+  maskCoin(event: any): void {
 
     const input = event.target.value.replace(/[^0-9]/g, '');
     if (input == '00') {
@@ -259,10 +253,10 @@ export class MoaisComponent implements OnInit {
       .join("")
       .padStart(3, "0");
     const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
-    this.moaiForm.get('value')?.setValue(this.mascaraCurrency(digitsFloat));
+    this.moaiForm.get('value')?.setValue(this.maskCurrency(digitsFloat));
   }
 
-  mascaraCurrency(valor: string, locale: string = 'en-US', currency: string = 'USD'): string {
+  maskCurrency(valor: string, locale: string = 'en-US', currency: string = 'USD'): string {
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency

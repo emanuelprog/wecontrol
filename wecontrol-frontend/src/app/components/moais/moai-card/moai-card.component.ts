@@ -31,11 +31,11 @@ export class MoaiCardComponent {
   
   @ViewChild('rulesModal') rulesModal!: TemplateRef<any>;
   @ViewChild('participantsModal') participantsModal!: TemplateRef<any>;
+  
   loginResponse: LoginResponse | undefined;
 
   constructor(private modalService: NgbModal) {
-    const currentUserUUID = sessionStorage.getItem('currentUser');
-    this.loginResponse = StorageService.getUser(currentUserUUID!).user;
+    this.loginResponse = StorageService.getUser(sessionStorage.getItem('currentUser')!).user;
   }
 
   isParticipant() {

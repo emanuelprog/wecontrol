@@ -20,13 +20,15 @@ export class MoaiMonthlyCardComponent {
   @Input() status: string = '';
   @Input() disabled: boolean = false;
   @Input() role: string | undefined;
-  currentDate: Date | undefined;
   @Input() youBid: BidResponse | undefined;
   @Input() closeBids: boolean = false;
   @Input() highestBid: BidResponse | undefined;
   @Output() bid = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
+
   @ViewChild('bidsModal') bidsModal!: TemplateRef<any>;
+  
+  currentDate: Date | undefined;
 
   constructor(private modalService: NgbModal) {}
 
