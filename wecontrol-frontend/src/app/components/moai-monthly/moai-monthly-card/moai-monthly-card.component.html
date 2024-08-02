@@ -10,7 +10,7 @@
       <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid: {{ highestBid?.valueBid | currency:'USD':'symbol':'1.2-2' }}</p>
       <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid User: {{ highestBid?.user?.name }}</p>
       <mat-divider class="mb-2" *ngIf="!(bids.length > 0 && closeBids)"></mat-divider>
-      <button class="btn btn-primary" [disabled]="disabled" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids)" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
+      <button class="btn btn-primary btnBid" [disabled]="disabled" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids)" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
       <button class="btn icons" matTooltip="Delete bid" *ngIf="role == 'user' && youBid && !disabled && !(bids.length > 0 && closeBids)" (click)="onDelete()">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
