@@ -11,11 +11,14 @@ import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } 
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MoaiParticipantService } from '../../services/moai/moai-participant.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-moais',
   standalone: true,
-  imports: [SlickCarouselModule, NgForOf, MoaiCardComponent, CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [NgForOf, MoaiCardComponent, CommonModule, FormsModule, ReactiveFormsModule, MatPaginator],
   templateUrl: './moais.component.html',
   styleUrl: './moais.component.scss'
 })
@@ -30,6 +33,12 @@ export class MoaisComponent implements OnInit {
   moaiForm: FormGroup;
   isEdit: boolean = false;
   currentYear: string;
+  @ViewChild('paginator') paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+  currentItemsToShow: MoaiResponse[] = [];
+
+  pageSize = 10;
+  pageIndex = 0;
 
   constructor(
     private moaiService: MoaiService,
@@ -52,15 +61,6 @@ export class MoaisComponent implements OnInit {
     });
   }
 
-  slideConfig = {
-    arrows: false,
-    dots: true,
-    autoplay: false,
-    autoplaySpeed: 4000,
-    fade: true,
-    speed: 500
-  };
-
   ngOnInit(): void {
     this.findMoais();
   }
@@ -69,13 +69,18 @@ export class MoaisComponent implements OnInit {
     this.moaiService.findAll(this.loginResponse?.id!).subscribe({
       next: data => {
         if (data.body) {
-          this.slickModal.unslick();
           this.moais = data.body.body;
+          this.onPageChange({ pageIndex: 0, pageSize: 2 });
         }
       },
       error: (err: any) => {
       }
     })
+  }
+
+
+  onPageChange($event: { pageIndex?: any; pageSize?: any; }) {
+    this.currentItemsToShow = this.moais.slice($event.pageIndex * $event.pageSize, $event.pageIndex * $event.pageSize + $event.pageSize);
   }
 
 
@@ -122,7 +127,7 @@ export class MoaisComponent implements OnInit {
         if (data.body) {
           this.onMessage(data.body.message, '', 2000);
           this.closeModal();
-          window.location.reload();
+          this.findMoais();
         }
       },
       error: (err: any) => {
@@ -151,7 +156,7 @@ export class MoaisComponent implements OnInit {
         if (data.body) {
           this.onMessage(data.body.message, '', 2000);
           this.closeModal();
-          window.location.reload();
+          this.findMoais();
         }
       },
       error: (err: any) => {
@@ -223,7 +228,7 @@ export class MoaisComponent implements OnInit {
         next: (response) => {
           this.onMessage(response.body.message, '', 2000);
           this.closeModal();
-          window.location.reload();
+          this.findMoais();
         },
         error: (err) => {
           this.closeModal();

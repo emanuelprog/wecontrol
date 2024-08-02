@@ -1,53 +1,28 @@
 <div class="container">
-    <div>
-        <button class="btn btn-primary" *ngIf="loginResponse?.role == 'admin'" (click)="openCreateMoaiModal()">Create New Moai</button>
+  <div>
+    <button class="btn btn-primary" *ngIf="loginResponse?.role == 'admin'" (click)="openCreateMoaiModal()">Create New Moai</button>
+  </div>
+  <div class="cards">
+    <div class="card-wrapper" *ngFor="let moai of currentItemsToShow, let i=index;">
+      <app-moai-card 
+        [name]="moai.name" 
+        [value]="moai.value" 
+        [year]="moai.year" 
+        [duration]="moai.duration"
+        [participants]="moai.participants"
+        [status]="moai.status"
+        [organizer]="moai.userName" 
+        [rules]="moai.rules"
+        [createdAt]="moai.createdAt"
+        (edit)="onEditMoai(moai)"
+        (delete)="openConfirmDeleteModal(moai, confirmDelete)"
+        (view)="onViewMoai(moai)"
+        (participate)="onParticipateMoai(moai)">
+      </app-moai-card>
     </div>
-    <div class="carousel-wrapper">
-        <button class="arrow" (click)="slickModal.slickPrev()" *ngIf="moais.length > 0">
-          <i class="fa fa-chevron-left custom-icon" aria-hidden="true"></i>
-        </button>
-        <ngx-slick-carousel class="carousel" #slickModal="slick-carousel" [config]="slideConfig">
-          <div ngxSlickItem *ngFor="let moai of moais">
-            <app-moai-card 
-              [name]="moai.name" 
-              [value]="moai.value" 
-              [year]="moai.year" 
-              [duration]="moai.duration"
-              [participants]="moai.participants"
-              [status]="moai.status"
-              [organizer]="moai.userName" 
-              [rules]="moai.rules"
-              [createdAt]="moai.createdAt"
-              (edit)="onEditMoai(moai)"
-              (delete)="openConfirmDeleteModal(moai, confirmDelete)"
-              (view)="onViewMoai(moai)"
-              (participate)="onParticipateMoai(moai)">
-            </app-moai-card>
-          </div>
-        </ngx-slick-carousel>
-        <button class="arrow" (click)="slickModal.slickNext()" *ngIf="moais.length > 0">
-          <i class="fa fa-chevron-right custom-icon" aria-hidden="true"></i>
-        </button>
-      </div>
-    <div class="cards">
-          <div *ngFor="let moai of moais">
-              <app-moai-card 
-              [name]="moai.name" 
-              [value]="moai.value" 
-              [year]="moai.year" 
-              [duration]="moai.duration"
-              [participants]="moai.participants"
-              [status]="moai.status"
-              [organizer]="moai.userName" 
-              [rules]="moai.rules"
-              [createdAt]="moai.createdAt"
-              (edit)="onEditMoai(moai)"
-              (delete)="openConfirmDeleteModal(moai, confirmDelete)"
-              (view)="onViewMoai(moai)"
-              (participate)="onParticipateMoai(moai)">
-              </app-moai-card>
-          </div>
-    </div>
+  </div>
+  <mat-paginator id="paginator" (page)="onPageChange($event)" [length]="moais.length"
+        [pageSize]="2" [pageSizeOptions]="[2, 4, 5, 8]"></mat-paginator>
 </div>
 
 <ng-template #createMoaiModal let-modal>

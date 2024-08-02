@@ -1,44 +1,29 @@
-.carousel-wrapper {
+.container {
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }
 
-.carousel {
-  width: 60%;
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
 }
 
-.arrow {
-  margin: auto;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-}
-
-.custom-icon {
-  font-size: 3em; /* Ajuste conforme necessário */
-  color: rgba(175, 175, 175, 0.8);
-  transition: color 0.3s, transform 0.3s;
-}
-
-.custom-icon:hover {
-  color: rgb(131, 131, 131);
-  transform: scale(1.1);
-}
-
-.arrow:hover {
-  transform: scale(1.1);
-}
-
-@media (max-width: 768px) {
-  .carousel-wrapper {
-    display: none;
-  }
+.card-wrapper {
+  flex: 0 1 100%;
+  box-sizing: border-box;
 }
 
 @media (min-width: 769px) {
   .cards {
-    display: none;
+    width: 100%;
+  }
+
+  .card-wrapper {
+    flex: 0 1 calc(50% - 16px);
   }
 }
 
