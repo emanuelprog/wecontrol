@@ -1,6 +1,6 @@
 package com.app.wecontrol.dtos.moai;
 
-import com.app.wecontrol.dtos.login.LoginResponseDTO;
+import com.app.wecontrol.dtos.user.UserResponseDTO;
 
-public record MoaiParticipantRequestDTO(LoginResponseDTO participant, String idMoai) {
+public record MoaiParticipantRequestDTO(UserResponseDTO participant, String idMoai) {
 }

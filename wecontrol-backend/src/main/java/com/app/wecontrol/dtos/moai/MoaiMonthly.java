@@ -22,6 +22,5 @@ public class MoaiMonthly {
     private String month;
     private LocalDateTime bidStartDate;
     private LocalDateTime bidEndDate;
-    private List<BidDTO> bids;
     private String status;
 }

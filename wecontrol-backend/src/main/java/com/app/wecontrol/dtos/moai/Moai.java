@@ -1,6 +1,7 @@
 package com.app.wecontrol.dtos.moai;
 
 import com.app.wecontrol.dtos.login.LoginResponseDTO;
+import com.app.wecontrol.dtos.user.UserResponseDTO;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -23,11 +24,11 @@ public class Moai {
     private String rules;
     private String duration;
     private String status;
-    private LoginResponseDTO organizer;
+    private UserResponseDTO organizer;
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public Moai(String name, String value, String year, String rules, String duration, String status, LoginResponseDTO organizer, LocalDateTime createdAt) {
+    public Moai(String name, String value, String year, String rules, String duration, String status, UserResponseDTO organizer, LocalDateTime createdAt) {
         this.name = name;
         this.value = value;
         this.year = year;

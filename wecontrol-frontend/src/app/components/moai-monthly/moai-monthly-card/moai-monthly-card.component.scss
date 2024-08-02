@@ -4,6 +4,8 @@
   
   .card-header {
     font-size: 1.25rem;
+    background-color: #0D6EFD;
+    color: white;
   }
   
   .card-title {
@@ -17,4 +19,15 @@
   
   .card-footer {
     font-size: 0.875rem;
+    background-color: #0D6EFD;
+    color: white;
+  }
+
+  .icons {
+    padding: 0;
+    margin: 10px;
+  }
+
+  i:hover {
+    color: #0D6EFD;
   }

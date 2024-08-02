@@ -111,14 +111,18 @@ export class MoaisComponent implements OnInit {
       rules: this.moaiForm.get('rules')?.value,
       duration: this.moaiForm.get('duration')?.value,
       status: 'Open',
-      organizer: this.loginResponse
+      organizer: {
+        id: this.loginResponse?.id,
+        email: this.loginResponse?.email,
+        name: this.loginResponse?.name
+      }
     }
     this.moaiService.create(createJson).subscribe({
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message, '', 2000);
           this.closeModal();
-          this.findMoais();
+          window.location.reload();
         }
       },
       error: (err: any) => {
@@ -136,14 +140,18 @@ export class MoaisComponent implements OnInit {
       rules: this.moaiForm.get('rules')?.value,
       duration: this.moaiForm.get('duration')?.value,
       status: this.moaiForm.get('status')?.value,
-      organizer: this.loginResponse
+      organizer: {
+        id: this.loginResponse?.id,
+        email: this.loginResponse?.email,
+        name: this.loginResponse?.name
+      }
     }
     this.moaiService.edit(editJson).subscribe({
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message, '', 2000);
           this.closeModal();
-          this.findMoais();
+          window.location.reload();
         }
       },
       error: (err: any) => {
@@ -164,7 +172,14 @@ export class MoaisComponent implements OnInit {
       duration: moai.duration
     });
     this.currentYear = moai.year;
-    this.durations = Array.from({ length: 12 }, (_, i) => `${i + 1} Month${i + 1 > 1 ? 's' : ''}`);
+    if (moai.participants.length > 0) {
+      const durationMatch = moai.duration.match(/(\d+)/);
+      const startMonth = durationMatch ? parseInt(durationMatch[1], 10) : 0;
+    
+      if (startMonth > 0 && startMonth <= 12) {
+        this.durations = Array.from({ length: 12 - startMonth + 1 }, (_, i) => `${startMonth + i} Month${startMonth + i > 1 ? 's' : ''}`);
+      }
+    }
     this.modalService.open(this.createMoaiModal, { ariaLabelledBy: 'modal-basic-title', backdrop: 'static' });
   }
 
@@ -174,7 +189,11 @@ export class MoaisComponent implements OnInit {
 
   onParticipateMoai(moai: MoaiResponse) {
     const participantJson = {
-      participant: this.loginResponse,
+      participant: {
+        id: this.loginResponse?.id,
+        email: this.loginResponse?.email,
+        name: this.loginResponse?.name
+      },
       idMoai: moai.id
     }
     this.moaiParticipantService.create(participantJson).subscribe({
@@ -204,9 +223,10 @@ export class MoaisComponent implements OnInit {
         next: (response) => {
           this.onMessage(response.body.message, '', 2000);
           this.closeModal();
-          this.findMoais();
+          window.location.reload();
         },
         error: (err) => {
+          this.closeModal();
           this.onMessage(err.error.message, '', 2000);
         }
       });
@@ -221,6 +241,13 @@ export class MoaisComponent implements OnInit {
   }
 
   mascaraMoeda(event: any): void {
+
+    const input = event.target.value.replace(/[^0-9]/g, '');
+    if (input == '00') {
+      this.moaiForm.get('value')?.setValue('');
+      return;
+    }
+
     const onlyDigits = event.target.value
       .split("")
       .filter((s: string) => /\d/.test(s))

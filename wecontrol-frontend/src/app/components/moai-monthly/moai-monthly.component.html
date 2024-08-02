@@ -10,12 +10,49 @@
                 [month]="moaiMonthly.month" 
                 [bidStartDate]="moaiMonthly.bidStartDate" 
                 [bidEndDate]="moaiMonthly.bidEndDate" 
-                [highestBid]="moaiMonthly.highestBid"
+                [bids]="moaiMonthly.bids"
+                [highestBid]="highestBid(moaiMonthly.bids)"
                 [status]="moaiMonthly.status"
                 [disabled]="canYouBid(moaiMonthly)"
                 [role]="loginResponse?.role"
+                (bid)="openBidModal(moaiMonthly)"
+                [youBid]="youBid(moaiMonthly.bids)"
+                (delete)="openConfirmDeleteModal(youBid(moaiMonthly.bids), confirmDelete)"
+                [closeBids]="closeBids(moaiMonthly)"
             >
             </app-moai-monthly-card>
         </div>
     </div>
 </div>
+
+<ng-template #bidModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Give The Bid</h5>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="bidForm" (ngSubmit)="onBid(modal)">
+        <div class="mb-3">
+          <label for="bidValue" class="form-label">Bid Amount</label>
+          <input type="text" id="bidValue" class="form-control" name="bidValue" formControlName="valueBid" required (input)="coinMask($event)" min="min">
+          <p class="text-danger mt-2">Minimum bid amount: {{ min | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!bidForm.valid">Confirm</button>
+        </div>
+      </form>
+    </div>
+  </ng-template>
+
+  <ng-template #confirmDelete let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Confirm Delete</h4>
+    </div>
+    <div class="modal-body">
+      <p>Are you sure you want to delete this Bid?</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="deleteConfirmed(modal)">Delete</button>
+    </div>
+  </ng-template>

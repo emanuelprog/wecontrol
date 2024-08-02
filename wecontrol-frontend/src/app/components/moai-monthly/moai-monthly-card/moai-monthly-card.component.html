@@ -1,17 +1,49 @@
-<div class="card">
+<div class="card" [ngStyle]="{'opacity': status === 'Open' ? '1' : '0.5'}">
     <div class="card-header">
       {{ month }}
     </div>
     <div class="card-body">
       <h5 class="card-title">{{ status }} <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': status === 'Open' ? 'green' : 'red'}" aria-hidden="true"></i></h5>
+      <mat-divider class="mb-2"></mat-divider>
       <p class="card-text" *ngIf="bidStartDate">Bid Start: {{ bidStartDate.slice(0, 10) }}</p>
       <p class="card-text" *ngIf="bidEndDate">Bid End: {{ bidEndDate.slice(0, 10) }}</p>
-      <p class="card-text" *ngIf="highestBid">Highest Bid: {{ highestBid }}</p>
-      <p class="card-text" *ngIf="highestBidUser">Highest Bid User: {{ highestBidUser }}</p>
-      <button class="btn btn-primary" [disabled]="disabled" *ngIf="role != 'admin'">Bid</button>
-      <button class="btn btn-primary" *ngIf="role == 'admin' && highestBid">View bids</button>
+      <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid: {{ highestBid?.valueBid | currency:'USD':'symbol':'1.2-2' }}</p>
+      <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid User: {{ highestBid?.user?.name }}</p>
+      <mat-divider class="mb-2" *ngIf="!(bids.length > 0 && closeBids)"></mat-divider>
+      <button class="btn btn-primary" [disabled]="disabled" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids)" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
+      <button class="btn icons" matTooltip="Delete bid" *ngIf="role == 'user' && youBid && !disabled && !(bids.length > 0 && closeBids)" (click)="onDelete()">
+        <i class="fa fa-trash" aria-hidden="true"></i>
+      </button>
+      <button class="btn btn-primary" *ngIf="role == 'admin' && bids.length > 0 && !(bids.length > 0 && closeBids && role != 'admin')" (click)="openBidsModal()">View bids</button>
     </div>
-    <div class="card-footer text-muted">
-      <p class="card-text text-danger" *ngIf="!highestBid">No bids yet</p>
+    <div class="card-footer">
+      <p style="margin: 0;">{{ bids.length == 0 ? 'No bids yet' : 'Number of bids:' + bids.length }}</p>
     </div>
 </div>
+
+<ng-template #bidsModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Bids</h4>
+  </div>
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Position</th>
+          <th scope="col">Name</th>
+          <th scope="col">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bid of bids; let i = index">
+          <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ i + 1 }}</td>
+          <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ bid.user.name }}</td>
+          <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ bid.valueBid | currency:'USD':'symbol':'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+  </div>
+</ng-template>

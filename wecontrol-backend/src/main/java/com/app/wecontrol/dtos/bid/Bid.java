@@ -1,4 +1,4 @@
-package com.app.wecontrol.dtos.moai;
+package com.app.wecontrol.dtos.bid;
 
 import com.app.wecontrol.dtos.user.UserResponseDTO;
 import lombok.AllArgsConstructor;
@@ -8,19 +8,21 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document(collection = "bids")
 @Data
-@Document(collection = "moai-participant")
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class MoaiParticipant {
+public class Bid {
     @Id
     private String id;
-    private UserResponseDTO participant;
-    private String idMoai;
+    private String idMonthly;
+    private UserResponseDTO user;
+    private String valueBid;
 
-    public MoaiParticipant(UserResponseDTO participant, String idMoai) {
-        this.participant = participant;
-        this.idMoai = idMoai;
+    public Bid(String idMonthly, UserResponseDTO user, String valueBid) {
+        this.idMonthly = idMonthly;
+        this.user = user;
+        this.valueBid = valueBid;
     }
 }

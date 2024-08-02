@@ -88,14 +88,18 @@ public class MoaiService {
     }
 
     public Object delete(String id) {
-        // Fazer validação se existe participantes (Se existir não permitir exclusão).
+        List<MoaiParticipant> participants = moaiParticipantRepository.findAllByIdMoai(id);
+
+        if (!participants.isEmpty()) {
+            throw new BadRequestException("Cannot delete moai, there are participants!");
+        }
 
         moaiRepository.deleteById(id);
         return null;
     }
 
-    private List<Moai> getMoaisByUserRole(String id, String userRole) {
-        return "admin".equalsIgnoreCase(userRole) ? moaiRepository.findAllByOrganizerId(id) : moaiRepository.findAll();
+    private List<Moai> getMoaisByUserRole(String userId, String userRole) {
+        return "admin".equalsIgnoreCase(userRole) ? moaiRepository.findAllByOrganizerId(userId) : moaiRepository.findAll();
     }
 
     private List<MoaiParticipantResponseDTO> getParticipantsByIdMoai(String idMoai) {

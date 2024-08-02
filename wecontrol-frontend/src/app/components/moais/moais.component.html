@@ -36,13 +36,15 @@
               [value]="moai.value" 
               [year]="moai.year" 
               [duration]="moai.duration"
+              [participants]="moai.participants"
               [status]="moai.status"
               [organizer]="moai.userName" 
               [rules]="moai.rules"
               [createdAt]="moai.createdAt"
               (edit)="onEditMoai(moai)"
               (delete)="openConfirmDeleteModal(moai, confirmDelete)"
-              (view)="onViewMoai(moai)">
+              (view)="onViewMoai(moai)"
+              (participate)="onParticipateMoai(moai)">
               </app-moai-card>
           </div>
     </div>

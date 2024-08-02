@@ -1,11 +1,12 @@
+import { BidResponse } from "./bid.model"
+
 export interface MoaiMonthlyResponse {
   id: string,
   idMoai: string,
   month: string,
   bidStartDate: string,
   bidEndDate: string,
-  highestBid: string,
-  idHighestBidderUser: string,
+  bids: BidResponse[],
   status: string
 }
 
@@ -16,8 +17,7 @@ export class MoaiMonthlyResponse implements MoaiMonthlyResponse {
       public month: string,
       public bidStartDate: string,
       public bidEndDate: string,
-      public highestBid: string,
-      public idHighestBidderUser: string,
+      public bids: BidResponse[],
       public status: string
       ) { }
   }
