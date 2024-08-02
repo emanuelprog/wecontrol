@@ -12,6 +12,7 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BidResponse } from '../../models/bid.model';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-moai-monthly',
@@ -23,7 +24,7 @@ import { BidResponse } from '../../models/bid.model';
 export class MoaiMonthlyComponent implements OnInit {
   @ViewChild('bidModal') bidModal!: TemplateRef<any>;
   moaiMonthlys: MoaiMonthlyResponse[] = [];
-  
+
   bidForm: FormGroup;
 
   loginResponse: LoginResponse | undefined;
@@ -31,16 +32,17 @@ export class MoaiMonthlyComponent implements OnInit {
   modalRef: NgbModalRef | undefined;
   moaiMonthly: MoaiMonthlyResponse | undefined;
   bidDelete: BidResponse | undefined;
-  
+
   min: number | undefined;
   isEdit: boolean = false;
 
   constructor(
-    private route: Router, 
-    private moaiMonthlyService: MoaiMonthlyService, 
+    private route: Router,
+    private moaiMonthlyService: MoaiMonthlyService,
     private modalService: NgbModal,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private authService: AuthService
     ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
@@ -55,7 +57,7 @@ export class MoaiMonthlyComponent implements OnInit {
       this.moai = history.state.data;
       this.min = this.extractNumber(this.moai?.value!) * 0.10
       this.findMoaiMonthly(this.moai?.id!);
-    } 
+    }
   }
 
   back() {
@@ -72,13 +74,13 @@ export class MoaiMonthlyComponent implements OnInit {
         }
       },
       error: (err: any) => {
-        this.route.navigate(['/logged']);
+        this.authService.logout();
       }
     })
   }
 
   openBidModal(moaiMonthly: MoaiMonthlyResponse) {
-    
+
     let bid: BidResponse | undefined = this.youBid(moaiMonthly.bids);
     this.moaiMonthly = moaiMonthly;
     if (bid) {
@@ -219,7 +221,7 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   coinMask(event: any): void {
-    
+
     const input = event.target.value.replace(/[^0-9]/g, '');
     if (input == '00') {
       this.bidForm.get('valueBid')?.setValue('');

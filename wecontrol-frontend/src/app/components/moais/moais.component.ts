@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { MoaiParticipantService } from '../../services/moai/moai-participant.service';
 import { MatPaginator } from '@angular/material/paginator';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-moais',
@@ -43,7 +44,8 @@ export class MoaisComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private route: Router,
-    private moaiParticipantService: MoaiParticipantService
+    private moaiParticipantService: MoaiParticipantService,
+    private authService: AuthService,
     ) {
     this.loginResponse = StorageService.getUser(sessionStorage.getItem('currentUser')!).user;
     this.currentYear = new Date().getFullYear().toString();
@@ -70,6 +72,7 @@ export class MoaisComponent implements OnInit {
         }
       },
       error: (err: any) => {
+        this.authService.logout();
       }
     })
   }
@@ -174,7 +177,7 @@ export class MoaisComponent implements OnInit {
     if (moai.participants.length > 0) {
       const durationMatch = moai.duration.match(/(\d+)/);
       const startMonth = durationMatch ? parseInt(durationMatch[1], 10) : 0;
-    
+
       if (startMonth > 0 && startMonth <= 12) {
         this.durations = Array.from({ length: 12 - startMonth + 1 }, (_, i) => `${startMonth + i} Month${startMonth + i > 1 ? 's' : ''}`);
       }
