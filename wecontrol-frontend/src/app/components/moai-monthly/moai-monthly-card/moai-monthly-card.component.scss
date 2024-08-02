@@ -1,22 +1,24 @@
 .card {
     margin: 20px;
+    border: none;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
   }
-  
+
   .card-header {
     font-size: 1.25rem;
     background-color: #0D6EFD;
     color: white;
   }
-  
+
   .card-title {
     font-size: 1.5rem;
     margin-bottom: 10px;
   }
-  
+
   .card-text {
     margin: 5px 0;
   }
-  
+
   .card-footer {
     font-size: 0.875rem;
     background-color: #0D6EFD;
@@ -30,4 +32,8 @@
 
   i:hover {
     color: #0D6EFD;
+  }
+
+  button {
+    box-shadow: 0px 8px 12px #bdd8ff;
   }
