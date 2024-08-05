@@ -16,7 +16,7 @@ public class MoaiUtils {
         return date.toLocalDate().format(formatter);
     }
 
-    public String convertLocalDateTimeToString(LocalDateTime dateTime) {
+    public String formatterLocalDateTimeToString(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
         return dateTime.format(formatter);
     }

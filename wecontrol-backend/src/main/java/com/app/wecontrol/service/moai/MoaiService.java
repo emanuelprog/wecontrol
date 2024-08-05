@@ -176,8 +176,8 @@ public class MoaiService {
 
                     return new MoaiMonthlyResponseDTO(
                             month,
-                            moaiUtils.convertLocalDateTimeToString(bidStartDate),
-                            moaiUtils.convertLocalDateTimeToString(bidEndDate),
+                            moaiUtils.formatterLocalDateTimeToString(bidStartDate),
+                            moaiUtils.formatterLocalDateTimeToString(bidEndDate),
                             monthDate.getMonthValue() == currentDate.getMonthValue() && monthDate.getYear() == currentDate.getYear() ? "Open" : "Closed",
                             new ArrayList<>());
                 })
