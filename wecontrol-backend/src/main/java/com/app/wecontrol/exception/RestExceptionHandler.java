@@ -7,24 +7,28 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
+import java.util.HashMap;
+
 @ControllerAdvice
 public class RestExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ExceptionResponse> handleNotFoundException(NotFoundException ex, WebRequest request) {
-        ExceptionResponse response = new ExceptionResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex, WebRequest request) {
+        HashMap<String, Object> map = new HashMap<>();
+
+        map.put("message", ex.getMessage());
+        map.put("code", HttpStatus.NOT_FOUND.value());
+
+        return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ExceptionResponse> handleBadRequestException(BadRequestException ex, WebRequest request) {
-        ExceptionResponse response = new ExceptionResponse(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+    public ResponseEntity<Object> handleBadRequestException(BadRequestException ex, WebRequest request) {
+        HashMap<String, Object> map = new HashMap<>();
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> handleGlobalException(Exception ex, WebRequest request) {
-        ExceptionResponse response = new ExceptionResponse("Internal server error", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        map.put("message", ex.getMessage());
+        map.put("code", HttpStatus.BAD_REQUEST.value());
+
+        return new ResponseEntity<>(map, HttpStatus.BAD_REQUEST);
     }
 }
