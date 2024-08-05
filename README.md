@@ -94,8 +94,5 @@ To contribute to the project, follow these steps:
 4. Push to the branch: `git push origin feature/<feature_name>`
 5. Open a pull request.
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Contact
 For any inquiries or issues, please contact the project maintainer at emanuelbessadev@gmail.com
