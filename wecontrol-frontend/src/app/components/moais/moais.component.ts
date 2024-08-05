@@ -176,7 +176,7 @@ export class MoaisComponent implements OnInit {
   onParticipateMoai(moai: MoaiResponse) {
     moai.participants?.push(this.loginResponse!);
 
-    this.moaiService.edit(moai).subscribe({
+    this.moaiService.addParticipant(moai).subscribe({
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message + ` ${moai.name}.`, '', 2000);

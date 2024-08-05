@@ -180,7 +180,7 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   canYouBid(moaiMonthly: any): boolean {
-    return !(new Date() >= this.convertStringToDate(moaiMonthly.bidStartDate) && new Date() <= this.convertStringToDate(moaiMonthly.bidEndDate));
+    return !(new Date() >= this.convertStringToDate(moaiMonthly.bidStartDateStr) && new Date() <= this.convertStringToDate(moaiMonthly.bidEndDateStr));
   }
 
   youBid(bids: BidResponse[]): BidResponse | undefined {
@@ -188,7 +188,7 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   closeBids(moaiMonthly: MoaiMonthlyResponse): boolean {
-    return (new Date() >= this.convertStringToDate(moaiMonthly.bidEndDate));
+    return (new Date() >= this.convertStringToDate(moaiMonthly.bidEndDateStr));
   }
 
   highestBid(bids: BidResponse[]): BidResponse | undefined {

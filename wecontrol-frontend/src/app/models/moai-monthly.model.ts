@@ -2,8 +2,8 @@ import { BidResponse } from "./bid.model";
 
 export interface MoaiMonthlyResponse {
   month: string,
-  bidStartDate: string,
-  bidEndDate: string,
+  bidStartDateStr: string,
+  bidEndDateStr: string,
   status: string,
   bids: BidResponse[]
 }
@@ -11,8 +11,8 @@ export interface MoaiMonthlyResponse {
 export class MoaiMonthlyResponse implements MoaiMonthlyResponse {
     constructor(
       public month: string,
-      public bidStartDate: string,
-      public bidEndDate: string,
+      public bidStartDateStr: string,
+      public bidEndDateStr: string,
       public status: string,
       public bids: BidResponse[]
       ) { }

@@ -14,10 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,14 +38,20 @@ public class MoaiService {
 
         return moais.stream()
                 .map(moai -> {
-                    List<MoaiMonthlyResponseDTO> sortedMonthlyList = moai.getMonthly().stream()
+                    List<MoaiMonthlyResponseDTO> sortedMonthlyList = Optional.ofNullable(moai.getMonthly())
+                            .orElseGet(Collections::emptyList)
+                            .stream()
                             .map(monthly -> {
-                                List<BidResponseDTO> sortedBids = monthly.bids().stream()
+                                List<BidResponseDTO> sortedBids = Optional.ofNullable(monthly.bids())
+                                        .orElseGet(Collections::emptyList)
+                                        .stream()
                                         .sorted(Comparator.comparing(BidResponseDTO::valueBid).reversed())
                                         .collect(Collectors.toList());
 
                                 return new MoaiMonthlyResponseDTO(
                                         monthly.month(),
+                                        moaiUtils.formatterLocalDateTimeToString(monthly.bidStartDate()),
+                                        moaiUtils.formatterLocalDateTimeToString(monthly.bidEndDate()),
                                         monthly.bidStartDate(),
                                         monthly.bidEndDate(),
                                         monthly.status(),
@@ -128,7 +131,7 @@ public class MoaiService {
                             moaiRequestDTO.status(),
                             moaiRequestDTO.organizer(),
                             moaiRequestDTO.participants(),
-                            moaiRequestDTO.monthly(),
+                            generateListMonthly(existingMoai, moaiRequestDTO),
                             existingMoai.getCreatedAt()
                     )
             );
@@ -158,8 +161,8 @@ public class MoaiService {
         LocalDate startDate = moai.getCreatedAt().plusMonths(1).toLocalDate();
         LocalDate currentDate = LocalDate.now();
 
-        List<MoaiMonthlyResponseDTO> existingMonthlyList = moai.getMonthly();
-        List<UserResponseDTO> existingParticipants = moai.getParticipants();
+        List<MoaiMonthlyResponseDTO> existingMonthlyList = Optional.ofNullable(moaiRequestDTO.monthly()).orElseGet(ArrayList::new);
+        List<UserResponseDTO> existingParticipants = Optional.ofNullable(moai.getParticipants()).orElseGet(ArrayList::new);
 
         List<UserResponseDTO> newParticipants = moaiRequestDTO.participants();
 
@@ -178,6 +181,8 @@ public class MoaiService {
                             month,
                             moaiUtils.formatterLocalDateTimeToString(bidStartDate),
                             moaiUtils.formatterLocalDateTimeToString(bidEndDate),
+                            bidStartDate.minusHours(4),
+                            bidEndDate.minusHours(4),
                             monthDate.getMonthValue() == currentDate.getMonthValue() && monthDate.getYear() == currentDate.getYear() ? "Open" : "Closed",
                             new ArrayList<>());
                 })
