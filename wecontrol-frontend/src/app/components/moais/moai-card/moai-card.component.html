@@ -6,13 +6,12 @@
       <h5 class="card-title">Value: {{ value }}</h5>
       <mat-divider></mat-divider>
       <p class="card-text">Year: {{ year }}</p>
-      <p class="card-text">Duration: {{ duration }}</p>
       <p class="card-text">
         <button class="btn icons" style="margin: 0; padding: 0;">
           <i class="fa fa-user" aria-hidden="true" matTooltip="Participants" (click)="openParticipantsModal()"></i>
         </button> {{ participants.length }}
       </p>
-      <p class="card-text">{{ status }} 
+      <p class="card-text">{{ status }}
         <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': status === 'Open' ? 'green' : 'red'}" aria-hidden="true"></i>
       </p>
       <mat-divider class="mb-2"></mat-divider>
@@ -22,10 +21,10 @@
         <button class="btn icons" (click)="openRules()" matTooltip="See rules">
           <i class="fa fa-book fa-lg" aria-hidden="true"></i>
         </button>
-        <button class="btn icons" matTooltip="Edit moai" *ngIf="loginResponse?.role == 'admin'" (click)="onEdit()">
+        <button class="btn icons" matTooltip="Edit moai" *ngIf="loginResponse?.role == 'admin' && participants.length == 0" (click)="onEdit()">
           <i class="fa fa-pencil" aria-hidden="true"></i>
         </button>
-        <button class="btn icons" matTooltip="Delete moai" *ngIf="loginResponse?.role == 'admin'" (click)="onDelete()">
+        <button class="btn icons" matTooltip="Delete moai" *ngIf="loginResponse?.role == 'admin'  && participants.length == 0" (click)="onDelete()">
           <i class="fa fa-trash" aria-hidden="true"></i>
         </button>
       </div>
@@ -35,7 +34,7 @@
       <span>Created At: {{ createdAt }}</span>
     </div>
   </div>
-  
+
   <ng-template #rulesModal let-modal>
     <div class="modal-header">
       <h4 class="modal-title">Rules</h4>
@@ -54,7 +53,7 @@
     </div>
     <div class="modal-body">
       <ul>
-        <li *ngFor="let moaiParticipant of participants">{{ moaiParticipant.participant.name }}</li>
+        <li *ngFor="let moaiParticipant of participants">{{ moaiParticipant.name }}</li>
       </ul>
     </div>
     <div class="modal-footer">

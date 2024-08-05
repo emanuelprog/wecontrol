@@ -1,9 +1,7 @@
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToolbarComponent } from '../toolbar/toolbar.component';
-import { MoaiMonthlyResponse } from '../../models/moai-monthly.model';
-import { MoaiMonthlyService } from '../../services/moai/moai-monthly.service';
-import { MoaiResponse } from '../../models/moai.model';
+import { MoaiResponse } from '../../models/moai-response.model';
 import { MoaiMonthlyCardComponent } from './moai-monthly-card/moai-monthly-card.component';
 import { CommonModule, NgForOf } from '@angular/common';
 import { LoginResponse } from '../../models/login.model';
@@ -11,8 +9,10 @@ import { StorageService } from '../../services/storage/storage.service';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { BidResponse } from '../../models/bid.model';
 import { AuthService } from '../../services/auth/auth.service';
+import { MoaiMonthlyResponse } from '../../models/moai-monthly.model';
+import { BidResponse } from '../../models/bid.model';
+import { MoaiService } from '../../services/moai/moai.service';
 
 @Component({
   selector: 'app-moai-monthly',
@@ -38,11 +38,11 @@ export class MoaiMonthlyComponent implements OnInit {
 
   constructor(
     private route: Router,
-    private moaiMonthlyService: MoaiMonthlyService,
     private modalService: NgbModal,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private authService: AuthService
+    private authService: AuthService,
+    private moaiService: MoaiService
     ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
@@ -56,27 +56,12 @@ export class MoaiMonthlyComponent implements OnInit {
     if (history.state && history.state.data) {
       this.moai = history.state.data;
       this.min = this.extractNumber(this.moai?.value!) * 0.10
-      this.findMoaiMonthly(this.moai?.id!);
+      this.moaiMonthlys = this.moai?.monthly!;
     }
   }
 
   back() {
     this.route.navigate(['/logged']);
-  }
-
-  findMoaiMonthly(id: string) {
-    this.moaiMonthlyService.findAllByMoaiId(id).subscribe({
-      next: data => {
-        if (data.body) {
-          this.moaiMonthlys = data.body.body;
-        } else {
-          this.route.navigate(['/logged']);
-        }
-      },
-      error: (err: any) => {
-        this.authService.logout();
-      }
-    })
   }
 
   openBidModal(moaiMonthly: MoaiMonthlyResponse) {
@@ -86,7 +71,7 @@ export class MoaiMonthlyComponent implements OnInit {
     if (bid) {
       this.isEdit = true;
       this.bidForm = this.fb.group({
-        valueBid: [this.maskCurrency(bid.valueBid), [Validators.required, this.minValueValidator(this.min!)]]
+        valueBid: [this.maskCurrency(bid.valueBid.toString()), [Validators.required, this.minValueValidator(this.min!)]]
       });
     } else {
       this.bidForm = this.fb.group({
@@ -108,21 +93,13 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   createBid() {
-    const bidJson = {
-      idMonthly: this.moaiMonthly?.id,
-      user: {
-        id: this.loginResponse?.id,
-        email: this.loginResponse?.email,
-        name: this.loginResponse?.name
-      },
-      valueBid: this.extractNumber(this.bidForm.get('valueBid')?.value)
-    }
-    this.moaiMonthlyService.bid(bidJson).subscribe({
+    let bid: BidResponse = new BidResponse(this.loginResponse!, this.extractNumber(this.bidForm.get('valueBid')?.value));
+    this.moai?.monthly.find(mo => mo == this.moaiMonthly)?.bids.push(bid);
+    this.moaiService.bidMonthly(this.moai!).subscribe({
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message, '', 2000);
           this.closeModal();
-          this.findMoaiMonthly(this.moai?.id!);
         }
       },
       error: (err) => {
@@ -133,23 +110,24 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   editBid() {
-    let bid: BidResponse | undefined = this.youBid(this.moaiMonthly?.bids!);
+    const bidValue = this.extractNumber(this.bidForm.get('valueBid')?.value);
+    const bid = this.youBid(this.moaiMonthly?.bids!);
 
-    const bidJson = {
-      idMonthly: this.moaiMonthly?.id,
-      user: {
-        id: this.loginResponse?.id,
-        email: this.loginResponse?.email,
-        name: this.loginResponse?.name
-      },
-      valueBid: this.extractNumber(this.bidForm.get('valueBid')?.value)
+    if (bid) {
+        const monthly = this.moai?.monthly.find(mo => mo === this.moaiMonthly);
+        if (monthly) {
+            const existingBid = monthly.bids.find(b => b === bid);
+            if (existingBid) {
+                existingBid.valueBid = bidValue;
+            }
+        }
     }
-    this.moaiMonthlyService.editBid(bidJson, bid?.id!).subscribe({
+
+    this.moaiService.bidMonthly(this.moai!).subscribe({
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message, '', 2000);
           this.closeModal();
-          this.findMoaiMonthly(this.moai?.id!);
         }
       },
       error: (err) => {
@@ -169,18 +147,25 @@ export class MoaiMonthlyComponent implements OnInit {
 
   deleteConfirmed(modal: any) {
     if (this.bidDelete) {
-      this.moaiMonthlyService.deleteBid(this.bidDelete.id).subscribe({
-        next: (response) => {
-          this.onMessage(response.body.message, '', 2000);
-          this.closeModal();
-          this.findMoaiMonthly(this.moai?.id!);
-        },
-        error: (err) => {
-          this.onMessage(err.error.message, '', 2000);
-        }
-      });
+      const monthly = this.moai?.monthly.find(mo => mo == this.moaiMonthly);
+
+      if (monthly) {
+          monthly.bids = monthly.bids.filter(bid => bid !== this.bidDelete);
+
+          this.moaiService.deleteBid(this.moai!).subscribe({
+              next: data => {
+                if (data.body) {
+                  this.onMessage(data.body.message, '', 2000);
+                  this.closeModal();
+                }
+              },
+              error: (err) => {
+                  this.onMessage(err.error.message, '', 2000);
+              }
+          });
+      }
+      this.bidDelete = undefined;
     }
-    this.bidDelete = undefined;
   }
 
   closeModal() {
@@ -199,7 +184,7 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   youBid(bids: BidResponse[]): BidResponse | undefined {
-    return bids.find(bid => bid.user.id === this.loginResponse?.id);
+    return bids?.find(bid => bid.user.id === this.loginResponse?.id);
   }
 
   closeBids(moaiMonthly: MoaiMonthlyResponse): boolean {

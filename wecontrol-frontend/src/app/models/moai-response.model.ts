@@ -1,4 +1,5 @@
-import { MoaiParticipantResponse } from "./moai-participant.model";
+import { LoginResponse } from "./login.model";
+import { MoaiMonthlyResponse } from "./moai-monthly.model";
 
 export interface MoaiResponse {
   id: string,
@@ -6,12 +7,11 @@ export interface MoaiResponse {
   value: string,
   year: string,
   rules: string,
-  duration: string,
   status: string,
-  userId: string,
-  userName: string,
-  createdAt: string,
-  participants: MoaiParticipantResponse[]
+  organizer: LoginResponse,
+  participants: LoginResponse[],
+  monthly: MoaiMonthlyResponse[],
+  createdAt: string
 }
 
 export class MoaiResponse implements MoaiResponse {
@@ -21,12 +21,11 @@ export class MoaiResponse implements MoaiResponse {
       public value: string,
       public year: string,
       public rules: string,
-      public duration: string,
       public status: string,
-      public userId: string,
-      public userName: string,
-      public createdAt: string,
-      public participants: MoaiParticipantResponse[]
+      public organizer: LoginResponse,
+      public participants: LoginResponse[],
+      public monthly: MoaiMonthlyResponse[],
+      public createdAt: string
       ) { }
   }
 

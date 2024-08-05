@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
-import { BidResponse } from '../../../models/bid.model';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { BidResponse } from '../../../models/bid.model';
 
 @Component({
   selector: 'app-moai-monthly-card',
@@ -27,7 +27,7 @@ export class MoaiMonthlyCardComponent {
   @Output() delete = new EventEmitter<void>();
 
   @ViewChild('bidsModal') bidsModal!: TemplateRef<any>;
-  
+
   currentDate: Date | undefined;
 
   constructor(private modalService: NgbModal) {}

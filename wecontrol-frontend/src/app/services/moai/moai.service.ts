@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { MoaiResponse } from '../../models/moai.model';
 import { StorageService } from '../storage/storage.service';
-import { LoginResponse } from '../../models/login.model';
+import { MoaiResponse } from '../../models/moai-response.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +17,7 @@ export class MoaiService {
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
     });
-    
+
     return this.httpClient.get<any>(this.baseUrl + `/${id}`, { headers: headers, observe: 'response' });
   }
 
@@ -42,5 +41,29 @@ export class MoaiService {
     });
     return this.httpClient.delete<any>(this.baseUrl + `/${id}`, { headers: headers, observe: 'response'});
   }
-  
+
+  addParticipant(moai: MoaiResponse): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+
+    return this.httpClient.post<any>(this.baseUrl + '/add-participant', moai, { headers: headers, observe: 'response' });
+  }
+
+  bidMonthly(moai: MoaiResponse): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+
+    return this.httpClient.post<any>(this.baseUrl + '/bid-monthly', moai, { headers: headers, observe: 'response' });
+  }
+
+  deleteBid(moai: MoaiResponse): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+
+    return this.httpClient.post<any>(this.baseUrl + '/delete-bid', moai, { headers: headers, observe: 'response' });
+  }
+
 }

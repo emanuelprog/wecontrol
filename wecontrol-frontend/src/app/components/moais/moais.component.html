@@ -8,10 +8,9 @@
         [name]="moai.name"
         [value]="moai.value"
         [year]="moai.year"
-        [duration]="moai.duration"
-        [participants]="moai.participants"
         [status]="moai.status"
-        [organizer]="moai.userName"
+        [organizer]="moai.organizer.name"
+        [participants]="moai.participants"
         [rules]="moai.rules"
         [createdAt]="moai.createdAt"
         (edit)="onEditMoai(moai)"
@@ -46,16 +45,6 @@
         <div class="mb-3">
           <label for="moaiRules" class="form-label">Rules</label>
           <textarea class="form-control" id="moaiRules" formControlName="rules" required rows="2" cols="50"></textarea>
-        </div>
-        <div class="mb-3">
-            <label for="moaiDuration" class="form-label">Duration</label>
-            <div class="custom-select-wrapper">
-                <select class="form-control custom-select" id="moaiDuration" formControlName="duration" required>
-                    <option value="" disabled selected>Select duration</option>
-                    <option *ngFor="let duration of durations" [value]="duration">{{ duration }}</option>
-                </select>
-                <span class="custom-select-icon">&#9660;</span>
-            </div>
         </div>
         <div style="display: flex; justify-content: space-between;">
             <button type="submit" class="btn btn-primary" (click)="onSubmit()">{{ isEdit ? 'Save' : 'Create' }}</button>

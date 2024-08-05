@@ -2,7 +2,7 @@ import { CommonModule, NgForOf } from '@angular/common';
 import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { SlickCarouselComponent, SlickCarouselModule } from 'ngx-slick-carousel';
 import { MoaiService } from '../../services/moai/moai.service';
-import { MoaiResponse } from '../../models/moai.model';
+import { MoaiResponse } from '../../models/moai-response.model';
 import { MoaiCardComponent } from './moai-card/moai-card.component';
 import { LoginResponse } from '../../models/login.model';
 import { StorageService } from '../../services/storage/storage.service';
@@ -10,7 +10,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { MoaiParticipantService } from '../../services/moai/moai-participant.service';
 import { MatPaginator } from '@angular/material/paginator';
 import { AuthService } from '../../services/auth/auth.service';
 
@@ -27,7 +26,6 @@ export class MoaisComponent implements OnInit {
   @ViewChild('paginator') paginator!: MatPaginator;
 
   moais: MoaiResponse[] = [];
-  durations: string[] = [];
   currentItemsToShow: MoaiResponse[] = [];
 
   loginResponse: LoginResponse | undefined;
@@ -44,7 +42,6 @@ export class MoaisComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private route: Router,
-    private moaiParticipantService: MoaiParticipantService,
     private authService: AuthService,
     ) {
     this.loginResponse = StorageService.getUser(sessionStorage.getItem('currentUser')!).user;
@@ -54,8 +51,7 @@ export class MoaisComponent implements OnInit {
       name: ['', Validators.required],
       value: ['', Validators.required],
       rules: ['', Validators.required],
-      status: ['Open'],
-      duration: ['', Validators.required]
+      status: ['Open']
     });
   }
 
@@ -83,7 +79,6 @@ export class MoaisComponent implements OnInit {
 
   openCreateMoaiModal() {
     this.moaiForm.reset();
-    this.durations = Array.from({ length: 12 }, (_, i) => `${i + 1} Month${i + 1 > 1 ? 's' : ''}`);
     this.modalService.open(this.createMoaiModal, { ariaLabelledBy: 'modal-basic-title', backdrop: 'static' });
   }
 
@@ -111,7 +106,6 @@ export class MoaisComponent implements OnInit {
       value: this.moaiForm.get('value')?.value,
       year: this.currentYear,
       rules: this.moaiForm.get('rules')?.value,
-      duration: this.moaiForm.get('duration')?.value,
       status: 'Open',
       organizer: {
         id: this.loginResponse?.id,
@@ -140,7 +134,6 @@ export class MoaisComponent implements OnInit {
       value: this.moaiForm.get('value')?.value,
       year: this.currentYear,
       rules: this.moaiForm.get('rules')?.value,
-      duration: this.moaiForm.get('duration')?.value,
       status: this.moaiForm.get('status')?.value,
       organizer: {
         id: this.loginResponse?.id,
@@ -170,18 +163,9 @@ export class MoaisComponent implements OnInit {
       name: moai.name,
       value: moai.value,
       rules: moai.rules,
-      status: moai.status,
-      duration: moai.duration
+      status: moai.status
     });
     this.currentYear = moai.year;
-    if (moai.participants.length > 0) {
-      const durationMatch = moai.duration.match(/(\d+)/);
-      const startMonth = durationMatch ? parseInt(durationMatch[1], 10) : 0;
-
-      if (startMonth > 0 && startMonth <= 12) {
-        this.durations = Array.from({ length: 12 - startMonth + 1 }, (_, i) => `${startMonth + i} Month${startMonth + i > 1 ? 's' : ''}`);
-      }
-    }
     this.modalService.open(this.createMoaiModal, { ariaLabelledBy: 'modal-basic-title', backdrop: 'static' });
   }
 
@@ -190,15 +174,9 @@ export class MoaisComponent implements OnInit {
   }
 
   onParticipateMoai(moai: MoaiResponse) {
-    const participantJson = {
-      participant: {
-        id: this.loginResponse?.id,
-        email: this.loginResponse?.email,
-        name: this.loginResponse?.name
-      },
-      idMoai: moai.id
-    }
-    this.moaiParticipantService.create(participantJson).subscribe({
+    moai.participants?.push(this.loginResponse!);
+
+    this.moaiService.edit(moai).subscribe({
       next: data => {
         if (data.body) {
           this.onMessage(data.body.message + ` ${moai.name}.`, '', 2000);

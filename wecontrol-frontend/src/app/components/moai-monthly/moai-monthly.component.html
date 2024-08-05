@@ -7,9 +7,9 @@
         <h1>{{ moai?.name }}</h1>
         <div *ngFor="let moaiMonthly of moaiMonthlys">
             <app-moai-monthly-card
-                [month]="moaiMonthly.month" 
-                [bidStartDate]="moaiMonthly.bidStartDate" 
-                [bidEndDate]="moaiMonthly.bidEndDate" 
+                [month]="moaiMonthly.month"
+                [bidStartDate]="moaiMonthly.bidStartDate"
+                [bidEndDate]="moaiMonthly.bidEndDate"
                 [bids]="moaiMonthly.bids"
                 [highestBid]="highestBid(moaiMonthly.bids)"
                 [status]="moaiMonthly.status"

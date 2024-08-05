@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { LoginResponse } from '../../../models/login.model';
 import { StorageService } from '../../../services/storage/storage.service';
-import { MoaiParticipantResponse } from '../../../models/moai-participant.model';
 
 @Component({
   selector: 'app-moai-card',
@@ -18,20 +17,19 @@ export class MoaiCardComponent {
   @Input() name: string = '';
   @Input() value: string = '';
   @Input() year: string = '';
-  @Input() duration: string = '';
+  @Input() participants: LoginResponse[] = [];
   @Input() status: string = '';
   @Input() organizer: string = '';
   @Input() rules: string = '';
   @Input() createdAt: string = '';
-  @Input() participants: MoaiParticipantResponse[] = [];
   @Output() edit = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
   @Output() view = new EventEmitter<void>();
   @Output() participate = new EventEmitter<void>();
-  
+
   @ViewChild('rulesModal') rulesModal!: TemplateRef<any>;
   @ViewChild('participantsModal') participantsModal!: TemplateRef<any>;
-  
+
   loginResponse: LoginResponse | undefined;
 
   constructor(private modalService: NgbModal) {
@@ -39,7 +37,7 @@ export class MoaiCardComponent {
   }
 
   isParticipant() {
-    return this.participants?.some(participant => participant.participant.id === this.loginResponse?.id);
+    return this.participants?.some(participant => participant.id === this.loginResponse?.id);
   }
 
   openParticipantsModal(): void {
