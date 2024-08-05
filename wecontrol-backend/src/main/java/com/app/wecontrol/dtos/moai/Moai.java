@@ -1,6 +1,5 @@
 package com.app.wecontrol.dtos.moai;
 
-import com.app.wecontrol.dtos.login.LoginResponseDTO;
 import com.app.wecontrol.dtos.user.UserResponseDTO;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
 @Document(collection = "moais")
 @Data
@@ -22,20 +21,25 @@ public class Moai {
     private String value;
     private String year;
     private String rules;
-    private String duration;
     private String status;
     private UserResponseDTO organizer;
+
+    private List<UserResponseDTO> participants;
+
+    private List<MoaiMonthlyResponseDTO> monthly;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
-    public Moai(String name, String value, String year, String rules, String duration, String status, UserResponseDTO organizer, LocalDateTime createdAt) {
+    public Moai(String name, String value, String year, String rules, String status, UserResponseDTO organizer, List<UserResponseDTO> participants, List<MoaiMonthlyResponseDTO> monthly, LocalDateTime createdAt) {
         this.name = name;
         this.value = value;
         this.year = year;
         this.rules = rules;
-        this.duration = duration;
         this.status = status;
         this.organizer = organizer;
+        this.participants = participants;
+        this.monthly = monthly;
         this.createdAt = createdAt;
     }
 }

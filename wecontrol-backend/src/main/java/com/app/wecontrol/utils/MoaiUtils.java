@@ -5,12 +5,8 @@ import org.springframework.stereotype.Component;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Component
 public class MoaiUtils {
@@ -25,24 +21,13 @@ public class MoaiUtils {
         return dateTime.format(formatter);
     }
 
-    public int extractMonths(String duration) {
-        Pattern pattern = Pattern.compile("(\\d+)\\s*(month|months)?", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(duration);
-
-        if (matcher.find()) {
-            return Integer.parseInt(matcher.group(1));
-        }
-
-        return 0;
-    }
-
     public LocalDateTime getFirstBusinessDayOfMonth(LocalDate date) {
         LocalDate firstDay = date.with(TemporalAdjusters.firstDayOfMonth());
         while (firstDay.getDayOfWeek() == DayOfWeek.SATURDAY || firstDay.getDayOfWeek() == DayOfWeek.SUNDAY) {
             firstDay = firstDay.plusDays(1);
         }
         LocalDateTime firstDayStart = firstDay.atStartOfDay();
-        return firstDayStart.withHour(0).withMinute(1).minusHours(4);
+        return firstDayStart.withHour(0).withMinute(1);
     }
 
     public LocalDateTime getFifthBusinessDayOfMonth(LocalDate date) {
@@ -57,6 +42,6 @@ public class MoaiUtils {
             }
         }
         LocalDateTime fifthDayEnd = currentDay.atStartOfDay();
-        return fifthDayEnd.withHour(18).withMinute(0).minusHours(4);
+        return fifthDayEnd.withHour(18).withMinute(0);
     }
 }

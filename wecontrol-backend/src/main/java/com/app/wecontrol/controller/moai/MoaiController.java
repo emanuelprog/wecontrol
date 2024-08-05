@@ -35,4 +35,19 @@ public class MoaiController {
     public ResponseEntity<DefaultResponse> delete(@PathVariable String id) {
         return ResponseUtil.generateResponse("Moai successfully deleted!", HttpStatus.OK, moaiService.delete(id));
     }
+
+    @PostMapping("/add-participant")
+    public ResponseEntity<DefaultResponse> addParticipant(@RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Participant successfully add!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    }
+
+    @PostMapping("/bid-monthly")
+    public ResponseEntity<DefaultResponse> bidMonthly(@RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Bid successfully add!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    }
+
+    @PostMapping("/delete-bid")
+    public ResponseEntity<DefaultResponse> deleteBid(@RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Bid successfully deleted!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    }
 }
