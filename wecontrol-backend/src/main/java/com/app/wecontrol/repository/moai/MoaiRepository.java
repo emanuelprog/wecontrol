@@ -1,6 +1,6 @@
 package com.app.wecontrol.repository.moai;
 
-import com.app.wecontrol.dtos.moai.Moai;
+import com.app.wecontrol.models.moai.Moai;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

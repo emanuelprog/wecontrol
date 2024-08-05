@@ -2,7 +2,8 @@ package com.app.wecontrol.service.moai;
 
 import com.app.wecontrol.dtos.bid.BidResponseDTO;
 import com.app.wecontrol.dtos.moai.*;
-import com.app.wecontrol.dtos.user.User;
+import com.app.wecontrol.models.moai.Moai;
+import com.app.wecontrol.models.user.User;
 import com.app.wecontrol.dtos.user.UserResponseDTO;
 import com.app.wecontrol.exception.BadRequestException;
 import com.app.wecontrol.exception.NotFoundException;

@@ -5,7 +5,7 @@ import com.app.wecontrol.dtos.authentication.RefreshTokenRequestDTO;
 import com.app.wecontrol.dtos.login.LoginResponseDTO;
 import com.app.wecontrol.dtos.register.RegisterDTO;
 import com.app.wecontrol.dtos.resetPassword.ResetPasswordDTO;
-import com.app.wecontrol.dtos.user.User;
+import com.app.wecontrol.models.user.User;
 import com.app.wecontrol.exception.BadRequestException;
 import com.app.wecontrol.infra.security.TokenService;
 import com.app.wecontrol.repository.user.UserRepository;

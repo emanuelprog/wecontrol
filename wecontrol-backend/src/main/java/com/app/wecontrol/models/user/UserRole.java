@@ -1,4 +1,4 @@
-package com.app.wecontrol.dtos.user;
+package com.app.wecontrol.models.user;
 
 public enum UserRole {
     ADMIN("admin"),

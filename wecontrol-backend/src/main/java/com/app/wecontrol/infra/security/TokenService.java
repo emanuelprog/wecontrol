@@ -1,6 +1,6 @@
 package com.app.wecontrol.infra.security;
 
-import com.app.wecontrol.dtos.user.User;
+import com.app.wecontrol.models.user.User;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;

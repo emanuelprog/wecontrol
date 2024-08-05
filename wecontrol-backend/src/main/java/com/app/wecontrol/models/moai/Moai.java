@@ -1,5 +1,6 @@
-package com.app.wecontrol.dtos.moai;
+package com.app.wecontrol.models.moai;
 
+import com.app.wecontrol.dtos.moai.MoaiMonthlyResponseDTO;
 import com.app.wecontrol.dtos.user.UserResponseDTO;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
