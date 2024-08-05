@@ -37,7 +37,9 @@ export class MoaiCardComponent {
   }
 
   isParticipant() {
-    return this.participants?.some(participant => participant.id === this.loginResponse?.id);
+    if (this.participants.length > 0) {
+      return this.participants?.some(participant => participant.id === this.loginResponse?.id);
+    }
   }
 
   openParticipantsModal(): void {

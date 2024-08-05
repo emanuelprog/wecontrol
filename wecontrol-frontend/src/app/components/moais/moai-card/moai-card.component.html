@@ -17,7 +17,7 @@
       <mat-divider class="mb-2"></mat-divider>
       <div>
         <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'user' && !isParticipant()" [disabled]="status !== 'Open'" (click)="onParticipate()">To participate</button>
-        <button class="btn btn-primary btnParticipate" *ngIf="loginResponse?.role == 'admin' || isParticipant()" (click)="onView()">See moai</button>
+        <button class="btn btn-primary btnParticipate" *ngIf="(loginResponse?.role == 'admin' || isParticipant()) && participants.length > 0" (click)="onView()">See moai</button>
         <button class="btn icons" (click)="openRules()" matTooltip="See rules">
           <i class="fa fa-book fa-lg" aria-hidden="true"></i>
         </button>
