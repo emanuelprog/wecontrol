@@ -219,7 +219,6 @@ public class MoaiService {
                 .filter(moai -> moai.getMonthly() != null && !moai.getMonthly().isEmpty())
                 .forEach(moai -> {
                     List<MoaiMonthlyResponseDTO> monthlyList = moai.getMonthly();
-                    // Ordena a lista de monthly por bidStartDate
                     monthlyList.sort(Comparator.comparing(m -> moaiUtils.formatterStringToLocalDateTime(m.bidStartDate())));
 
                     List<MoaiMonthlyResponseDTO> updatedMonthlyList = new ArrayList<>();
@@ -228,7 +227,7 @@ public class MoaiService {
                         LocalDateTime bidStartDate = moaiUtils.formatterStringToLocalDateTime(monthly.bidStartDate());
                         LocalDateTime nextBidStartDate = (i < monthlyList.size() - 1)
                                 ? moaiUtils.formatterStringToLocalDateTime(monthlyList.get(i + 1).bidStartDate())
-                                : LocalDateTime.MAX; // No próximo `monthly`, assume um valor máximo para não afetar a última verificação
+                                : LocalDateTime.MAX;
 
                         String status = (LocalDateTime.now().isAfter(bidStartDate) && LocalDateTime.now().isBefore(nextBidStartDate))
                                 ? "Open"
