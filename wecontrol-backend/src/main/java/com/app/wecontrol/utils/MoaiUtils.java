@@ -21,6 +21,11 @@ public class MoaiUtils {
         return dateTime.format(formatter);
     }
 
+    public LocalDateTime formatterStringToLocalDateTime(String dateTimeString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return LocalDateTime.parse(dateTimeString, formatter);
+    }
+
     public LocalDateTime getFirstBusinessDayOfMonth(LocalDate date) {
         LocalDate firstDay = date.with(TemporalAdjusters.firstDayOfMonth());
         while (firstDay.getDayOfWeek() == DayOfWeek.SATURDAY || firstDay.getDayOfWeek() == DayOfWeek.SUNDAY) {

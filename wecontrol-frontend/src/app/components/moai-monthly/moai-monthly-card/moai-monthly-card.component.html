@@ -10,11 +10,13 @@
       <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid: {{ highestBid?.valueBid | currency:'USD':'symbol':'1.2-2' }}</p>
       <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid User: {{ highestBid?.user?.name }}</p>
       <mat-divider class="mb-2" *ngIf="!(bids.length > 0 && closeBids)"></mat-divider>
-      <button class="btn btn-primary btnBid" [disabled]="disabled" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids)" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
+      <button class="btn btn-primary btnBid" [disabled]="disabled && status != 'Open'" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids)" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
       <button class="btn icons" matTooltip="Delete bid" *ngIf="role == 'user' && youBid && !disabled && !(bids.length > 0 && closeBids)" (click)="onDelete()">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
       <button class="btn btn-primary" *ngIf="role == 'admin' && bids.length > 0 && !(bids.length > 0 && closeBids && role != 'admin')" (click)="openBidsModal()">View bids</button>
+      <button class="btn btn-primary m-2" *ngIf="role == 'admin' && closeBids" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
+      <button class="btn btn-primary" *ngIf="role == 'user' && closeBids" (click)="onPay()" [disabled]="(disabled && status != 'Open') || youPay">{{ youPay ? 'Paid out' : 'Pay' }}</button>
     </div>
     <div class="card-footer">
       <p style="margin: 0;">{{ bids.length == 0 ? 'No bids yet' : 'Number of bids:' + bids.length }}</p>
@@ -39,6 +41,35 @@
           <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ i + 1 }}</td>
           <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ bid.user.name }}</td>
           <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ bid.valueBid | currency:'USD':'symbol':'1.2-2' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.close('Close click')">Close</button>
+  </div>
+</ng-template>
+
+<ng-template #paysModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Pays</h4>
+  </div>
+  <div class="modal-body">
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Name</th>
+          <th scope="col">Value</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of payStatusList; let i = index">
+          <td>{{ item.name }}</td>
+          <td>{{ item.valuePay | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td [ngClass]="{'text-success': item.status === 'Paid out', 'text-danger': item.status === 'I do not pay'}">
+            {{ item.status }}
+          </td>
         </tr>
       </tbody>
     </table>

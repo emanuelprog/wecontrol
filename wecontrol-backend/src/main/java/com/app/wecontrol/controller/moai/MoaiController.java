@@ -50,4 +50,9 @@ public class MoaiController {
     public ResponseEntity<DefaultResponse> deleteBid(@RequestBody MoaiRequestDTO data) {
         return ResponseUtil.generateResponse("Bid successfully deleted!", HttpStatus.CREATED, moaiService.update(data.id(), data));
     }
+
+    @PostMapping("/pay-monthly")
+    public ResponseEntity<DefaultResponse> payMonthly(@RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Pay successfully add!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    }
 }

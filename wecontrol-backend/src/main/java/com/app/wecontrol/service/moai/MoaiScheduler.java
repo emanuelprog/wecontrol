@@ -12,8 +12,9 @@ public class MoaiScheduler {
         this.moaiService = moaiService;
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(fixedRate = 3600000)
     public void updateMoaiStatuses() {
         moaiService.updateStatuses();
+        moaiService.updateStatusesMonthly();
     }
 }

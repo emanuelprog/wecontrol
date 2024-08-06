@@ -7,19 +7,23 @@
         <h1>{{ moai?.name }}</h1>
         <div *ngFor="let moaiMonthly of moaiMonthlys">
             <app-moai-monthly-card
-                [month]="moaiMonthly.month"
-                [bidStartDate]="moaiMonthly.bidStartDateStr"
-                [bidEndDate]="moaiMonthly.bidEndDateStr"
-                [bids]="moaiMonthly.bids"
-                [highestBid]="highestBid(moaiMonthly.bids)"
-                [status]="moaiMonthly.status"
-                [disabled]="canYouBid(moaiMonthly)"
-                [role]="loginResponse?.role"
-                (bid)="openBidModal(moaiMonthly)"
-                [youBid]="youBid(moaiMonthly.bids)"
-                (delete)="openConfirmDeleteModal(youBid(moaiMonthly.bids), confirmDelete)"
-                [closeBids]="closeBids(moaiMonthly)"
-            >
+            [month]="moaiMonthly.month"
+            [bidStartDate]="moaiMonthly.bidStartDate"
+            [bidEndDate]="moaiMonthly.bidEndDate"
+            [bids]="moaiMonthly.bids"
+            [pays]="moaiMonthly.pays"
+            [participants]="moai?.participants ?? []"
+            [highestBid]="highestBid(moaiMonthly.bids)"
+            [status]="moaiMonthly.status"
+            [disabled]="canYouBid(moaiMonthly)"
+            [role]="loginResponse?.role"
+            (bid)="openBidModal(moaiMonthly)"
+            [youBid]="youBid(moaiMonthly.bids)"
+            (delete)="openConfirmDeleteModal(youBid(moaiMonthly.bids), confirmDelete)"
+            [closeBids]="closeBids(moaiMonthly)"
+            (pay)="openPayModal(moaiMonthly)"
+            [youPay]="youPay(moaiMonthly.pays)"
+          >
             </app-moai-monthly-card>
         </div>
     </div>
@@ -33,8 +37,8 @@
       <form [formGroup]="bidForm" (ngSubmit)="onBid(modal)">
         <div class="mb-3">
           <label for="bidValue" class="form-label">Bid Amount</label>
-          <input type="text" id="bidValue" class="form-control" name="bidValue" formControlName="valueBid" required (input)="coinMask($event)" min="min">
-          <p class="text-danger mt-2">Minimum bid amount: {{ min | currency:'USD':'symbol':'1.2-2' }}</p>
+          <input type="text" id="bidValue" class="form-control" name="bidValue" formControlName="valueBid" required (input)="coinMaskBid($event)" min="min">
+          <p class="text-danger mt-2">Minimum bid amount: {{ minBid | currency:'USD':'symbol':'1.2-2' }}</p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
@@ -54,5 +58,24 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
       <button type="button" class="btn btn-danger" (click)="deleteConfirmed(modal)">Delete</button>
+    </div>
+  </ng-template>
+
+  <ng-template #payModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Give The Pay</h5>
+    </div>
+    <div class="modal-body">
+      <form [formGroup]="payForm" (ngSubmit)="onPay(modal)">
+        <div class="mb-3">
+          <label for="payValue" class="form-label">Pay Amount</label>
+          <input type="text" id="payValue" class="form-control" name="payValue" formControlName="valuePay" required (input)="coinMaskPay($event)" min="minPay">
+          <p class="text-danger mt-2">Minimum pay amount: {{ minPay | currency:'USD':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!payForm.valid">Confirm</button>
+        </div>
+      </form>
     </div>
   </ng-template>

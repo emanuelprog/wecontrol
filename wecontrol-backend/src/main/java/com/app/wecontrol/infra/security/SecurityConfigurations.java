@@ -31,6 +31,7 @@ public class SecurityConfigurations {
                         .requestMatchers(HttpMethod.GET, "api/moai/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/moai/add-participant").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/moai/bid-monthly").permitAll()
+                        .requestMatchers(HttpMethod.POST, "api/moai/pay-monthly").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/moai/delete-bid").permitAll()
                         .requestMatchers(HttpMethod.POST, "api/moai/create").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "api/moai/{id}").hasRole("ADMIN")

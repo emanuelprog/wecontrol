@@ -51,12 +51,11 @@ public class MoaiService {
 
                                 return new MoaiMonthlyResponseDTO(
                                         monthly.month(),
-                                        moaiUtils.formatterLocalDateTimeToString(monthly.bidStartDate()),
-                                        moaiUtils.formatterLocalDateTimeToString(monthly.bidEndDate()),
                                         monthly.bidStartDate(),
                                         monthly.bidEndDate(),
                                         monthly.status(),
-                                        sortedBids
+                                        sortedBids,
+                                        (monthly.pays() == null ? new ArrayList<>() : monthly.pays())
                                 );
                             })
                             .collect(Collectors.toList());
@@ -163,6 +162,7 @@ public class MoaiService {
         LocalDate currentDate = LocalDate.now();
 
         List<MoaiMonthlyResponseDTO> existingMonthlyList = Optional.ofNullable(moaiRequestDTO.monthly()).orElseGet(ArrayList::new);
+
         List<UserResponseDTO> existingParticipants = Optional.ofNullable(moai.getParticipants()).orElseGet(ArrayList::new);
 
         List<UserResponseDTO> newParticipants = moaiRequestDTO.participants();
@@ -182,9 +182,8 @@ public class MoaiService {
                             month,
                             moaiUtils.formatterLocalDateTimeToString(bidStartDate),
                             moaiUtils.formatterLocalDateTimeToString(bidEndDate),
-                            bidStartDate.minusHours(4),
-                            bidEndDate.minusHours(4),
                             monthDate.getMonthValue() == currentDate.getMonthValue() && monthDate.getYear() == currentDate.getYear() ? "Open" : "Closed",
+                            new ArrayList<>(),
                             new ArrayList<>());
                 })
                 .collect(Collectors.toList());
@@ -202,13 +201,51 @@ public class MoaiService {
         List<Moai> moais = moaiRepository.findAll();
 
         for (Moai moai : moais) {
-            LocalDateTime creationDate = moai.getCreatedAt();
-            LocalDateTime expirationDate = creationDate.plusMonths(moai.getParticipants().size());
-
-            if (LocalDateTime.now().isAfter(expirationDate)) {
-                moai.setStatus("Expired");
-                moaiRepository.save(moai);
+            if (moai.getStatus().equals("Open")) {
+                if (moai.getParticipants().size() > 0) {
+                    if (LocalDateTime.now().isAfter(moai.getCreatedAt().plusMonths(1))) {
+                        moai.setStatus("Expired");
+                        moaiRepository.save(moai);
+                    }
+                }
             }
         }
+    }
+
+    public void updateStatusesMonthly() {
+        List<Moai> moais = moaiRepository.findAll();
+
+        moais.stream()
+                .filter(moai -> moai.getMonthly() != null && !moai.getMonthly().isEmpty())
+                .forEach(moai -> {
+                    List<MoaiMonthlyResponseDTO> monthlyList = moai.getMonthly();
+                    // Ordena a lista de monthly por bidStartDate
+                    monthlyList.sort(Comparator.comparing(m -> moaiUtils.formatterStringToLocalDateTime(m.bidStartDate())));
+
+                    List<MoaiMonthlyResponseDTO> updatedMonthlyList = new ArrayList<>();
+                    for (int i = 0; i < monthlyList.size(); i++) {
+                        MoaiMonthlyResponseDTO monthly = monthlyList.get(i);
+                        LocalDateTime bidStartDate = moaiUtils.formatterStringToLocalDateTime(monthly.bidStartDate());
+                        LocalDateTime nextBidStartDate = (i < monthlyList.size() - 1)
+                                ? moaiUtils.formatterStringToLocalDateTime(monthlyList.get(i + 1).bidStartDate())
+                                : LocalDateTime.MAX; // No próximo `monthly`, assume um valor máximo para não afetar a última verificação
+
+                        String status = (LocalDateTime.now().isAfter(bidStartDate) && LocalDateTime.now().isBefore(nextBidStartDate))
+                                ? "Open"
+                                : "Closed";
+
+                        updatedMonthlyList.add(new MoaiMonthlyResponseDTO(
+                                monthly.month(),
+                                monthly.bidStartDate(),
+                                monthly.bidEndDate(),
+                                status,
+                                monthly.bids(),
+                                monthly.pays()
+                        ));
+                    }
+
+                    moai.setMonthly(updatedMonthlyList);
+                    moaiRepository.save(moai);
+                });
     }
 }

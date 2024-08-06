@@ -66,4 +66,12 @@ export class MoaiService {
     return this.httpClient.post<any>(this.baseUrl + '/delete-bid', moai, { headers: headers, observe: 'response' });
   }
 
+  payMonthly(moai: MoaiResponse): Observable<HttpResponse<any>> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
+    });
+
+    return this.httpClient.post<any>(this.baseUrl + '/pay-monthly', moai, { headers: headers, observe: 'response' });
+  }
+
 }
