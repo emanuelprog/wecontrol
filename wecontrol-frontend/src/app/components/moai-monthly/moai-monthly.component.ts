@@ -14,6 +14,7 @@ import { MoaiMonthlyResponse } from '../../models/moai-monthly.model';
 import { BidResponse } from '../../models/bid.model';
 import { MoaiService } from '../../services/moai/moai.service';
 import { PayResponse } from '../../models/pay.model';
+import { WhatsAppService } from '../../services/whatsapp/whatsapp.service';
 
 @Component({
   selector: 'app-moai-monthly',
@@ -28,7 +29,6 @@ export class MoaiMonthlyComponent implements OnInit {
   moaiMonthlys: MoaiMonthlyResponse[] = [];
 
   bidForm: FormGroup;
-  payForm: FormGroup;
 
   loginResponse: LoginResponse | undefined;
   moai: MoaiResponse | undefined;
@@ -39,22 +39,22 @@ export class MoaiMonthlyComponent implements OnInit {
   minBid: number | undefined;
   minPay: number | undefined;
   isEdit: boolean = false;
+  phoneNumber: string = '';
+  message: string = '';
 
   constructor(
     private route: Router,
     private modalService: NgbModal,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
-    private moaiService: MoaiService
+    private moaiService: MoaiService,
+    private whatsappService: WhatsAppService
     ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
 
     this.bidForm = this.fb.group({
       valueBid: ['', Validators.required]
-    });
-    this.payForm = this.fb.group({
-      valuePay: ['', Validators.required]
     });
    }
 
@@ -174,50 +174,51 @@ export class MoaiMonthlyComponent implements OnInit {
     }
   }
 
-  openPayModal(moaiMonthly: MoaiMonthlyResponse) {
+  notifyUsers() {
+    const users = [
+      { phoneNumber: '67991864602', message: 'Hello User!' },
+    ];
+
+    users.forEach(user => {
+      const link = this.whatsappService.buildWhatsAppLink(user.phoneNumber, user.message);
+      window.open(link, '_blank');
+    });
+  }
+
+  createPay() {
     let myHighestBidValue = this.findMyHighestBidValue();
+    console.log(myHighestBidValue);
+    
     if (myHighestBidValue !== undefined) {
       this.minPay = myHighestBidValue + this.extractNumber(this.moai?.value!);
     } else {
       this.minPay = this.extractNumber(this.moai?.value!);
     }
-  
-    this.payForm = this.fb.group({
-      valuePay: ['', [Validators.required, this.minValueValidator(this.minPay!)]]
-    });
-    this.moaiMonthly = moaiMonthly;
-    this.modalRef = this.modalService.open(this.payModal);
-  }
-
-  onPay(modal: any) {
-    if (this.payForm.valid) {
-        this.createPay();
-        modal.close('confirm');
-    }
-  }
-
-  createPay() {
-    let pay: PayResponse = new PayResponse(this.loginResponse!, this.extractNumber(this.payForm.get('valuePay')?.value));
+    
+    let pay: PayResponse = new PayResponse(this.loginResponse!, this.minPay);
+    console.log(pay);
     
     this.moai?.monthly.find(mo => mo == this.moaiMonthly)?.pays.push(pay);
     
-    this.moaiService.payMonthly(this.moai!).subscribe({
-      next: data => {
-        if (data.body) {
-          this.onMessage(data.body.message, '', 2000);
-          this.closeModal();
-        }
-      },
-      error: (err) => {
-        this.onMessage(err.error.message, '', 2000);
-        this.moaiMonthly = undefined;
-      }
-    })
+    // this.moaiService.payMonthly(this.moai!).subscribe({
+    //   next: data => {
+    //     if (data.body) {
+    //       this.onMessage(data.body.message, '', 2000);
+    //       this.closeModal();
+    //     }
+    //   },
+    //   error: (err) => {
+    //     this.onMessage(err.error.message, '', 2000);
+    //     this.moaiMonthly = undefined;
+    //   }
+    // })
   }
 
   findMyHighestBidValue(): number | undefined {
     for (let monthly of this.moaiMonthlys) {
       let highestBid = this.highestBid(monthly.bids);
+      console.log(highestBid);
+      
       if (highestBid && highestBid.user.id === this.loginResponse?.id) {
         return highestBid.valueBid;
       }
@@ -278,20 +279,6 @@ export class MoaiMonthlyComponent implements OnInit {
     const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
 
     this.bidForm.get('valueBid')?.setValue(this.maskCurrency(digitsFloat));
-  }
-
-  coinMaskPay(event: any): void {
-
-    const input = event.target.value.replace(/[^0-9]/g, '');
-    if (input == '00') {
-      this.payForm.get('valuePay')?.setValue('');
-      return;
-    }
-
-    const onlyDigits = input.padStart(3, "0");
-    const digitsFloat = onlyDigits.slice(0, -2) + "." + onlyDigits.slice(-2);
-
-    this.payForm.get('valuePay')?.setValue(this.maskCurrency(digitsFloat));
   }
 
   maskCurrency(valor: string, locale: string = 'en-US', currency: string = 'USD'): string {

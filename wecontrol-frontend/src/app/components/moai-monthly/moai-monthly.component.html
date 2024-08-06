@@ -21,8 +21,10 @@
             [youBid]="youBid(moaiMonthly.bids)"
             (delete)="openConfirmDeleteModal(youBid(moaiMonthly.bids), confirmDelete)"
             [closeBids]="closeBids(moaiMonthly)"
-            (pay)="openPayModal(moaiMonthly)"
             [youPay]="youPay(moaiMonthly.pays)"
+            (notify)="notifyUsers()"
+            [moai]="moai"
+            (pay)="createPay()"
           >
             </app-moai-monthly-card>
         </div>
@@ -58,24 +60,5 @@
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
       <button type="button" class="btn btn-danger" (click)="deleteConfirmed(modal)">Delete</button>
-    </div>
-  </ng-template>
-
-  <ng-template #payModal let-modal>
-    <div class="modal-header">
-      <h5 class="modal-title">Give The Pay</h5>
-    </div>
-    <div class="modal-body">
-      <form [formGroup]="payForm" (ngSubmit)="onPay(modal)">
-        <div class="mb-3">
-          <label for="payValue" class="form-label">Pay Amount</label>
-          <input type="text" id="payValue" class="form-control" name="payValue" formControlName="valuePay" required (input)="coinMaskPay($event)" min="minPay">
-          <p class="text-danger mt-2">Minimum pay amount: {{ minPay | currency:'USD':'symbol':'1.2-2' }}</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="modal.dismiss('cancel')">Cancel</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!payForm.valid">Confirm</button>
-        </div>
-      </form>
     </div>
   </ng-template>

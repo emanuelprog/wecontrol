@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BidResponse } from '../../../models/bid.model';
 import { PayResponse } from '../../../models/pay.model';
 import { LoginResponse } from '../../../models/login.model';
+import { MoaiResponse } from '../../../models/moai-response.model';
 
 @Component({
   selector: 'app-moai-monthly-card',
@@ -28,8 +29,10 @@ export class MoaiMonthlyCardComponent {
   @Input() highestBid: BidResponse | undefined;
   @Input() pays: PayResponse[] = [];
   @Input() participants: LoginResponse[] = [];
+  @Input() moai: MoaiResponse | undefined;
   @Output() bid = new EventEmitter<void>();
   @Output() pay = new EventEmitter<void>();
+  @Output() notify = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 
   @ViewChild('bidsModal') bidsModal!: TemplateRef<any>;
@@ -45,12 +48,16 @@ export class MoaiMonthlyCardComponent {
     this.bid.emit();
   }
 
+  onDelete() {
+    this.delete.emit();
+  }
+
   onPay() {
     this.pay.emit();
   }
 
-  onDelete() {
-    this.delete.emit();
+  onNotifyUsers() {
+    this.notify.emit();
   }
 
   openBidsModal(): void {
@@ -60,12 +67,24 @@ export class MoaiMonthlyCardComponent {
   openPaysModal() {
     this.payStatusList = this.participants.map(participant => {
       const payment = this.pays.find(pay => pay.user.id === participant.id);
+      let paymentValue = this.extractNumber(this.moai?.value!)!;
+      
+      if (this.highestBid?.user.id == participant.id) {
+        paymentValue = paymentValue + this.highestBid.valueBid;
+      }
       return {
         ...participant,
         status: payment ? 'Paid out' : 'I do not pay',
-        valuePay: payment?.valuePay ? payment.valuePay : 0
+        valuePay: paymentValue
       };
     });
+    
     this.modalService.open(this.paysModal, { ariaLabelledBy: 'modal-basic-title' });
+  }
+
+  extractNumber(value: string): number {
+    const numericValue = value.replace(/[^0-9.]+/g, '');
+    const parsedValue = parseFloat(numericValue);
+    return isNaN(parsedValue) ? 0 : parsedValue;
   }
 }

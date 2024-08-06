@@ -16,7 +16,8 @@
       </button>
       <button class="btn btn-primary" *ngIf="role == 'admin' && bids.length > 0 && !(bids.length > 0 && closeBids && role != 'admin')" (click)="openBidsModal()">View bids</button>
       <button class="btn btn-primary m-2" *ngIf="role == 'admin' && closeBids" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
-      <button class="btn btn-primary" *ngIf="role == 'user' && closeBids" (click)="onPay()" [disabled]="(disabled && status != 'Open') || youPay">{{ youPay ? 'Paid out' : 'Pay' }}</button>
+      <p class="card-text" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ youPay ? 'Paid out' : 'Pay' }}</p>
+      <button class="btn btn-primary" (click)="onNotifyUsers()" *ngIf="role == 'admin' && closeBids && status === 'Open'">Notify via WhatsApp</button>
     </div>
     <div class="card-footer">
       <p style="margin: 0;">{{ bids.length == 0 ? 'No bids yet' : 'Number of bids:' + bids.length }}</p>
@@ -52,7 +53,7 @@
 
 <ng-template #paysModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title">Pays</h4>
+    <h4 class="modal-title">Payments</h4>
   </div>
   <div class="modal-body">
     <table class="table">
@@ -61,14 +62,20 @@
           <th scope="col">Name</th>
           <th scope="col">Value</th>
           <th scope="col">Status</th>
+          <th scope="col">Pay?</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let item of payStatusList; let i = index">
-          <td>{{ item.name }}</td>
-          <td>{{ item.valuePay | currency:'USD':'symbol':'1.2-2' }}</td>
-          <td [ngClass]="{'text-success': item.status === 'Paid out', 'text-danger': item.status === 'I do not pay'}">
-            {{ item.status }}
+        <tr *ngFor="let user of payStatusList; let i = index">
+          <td>{{ user.name }}</td>
+          <td>
+            <p>{{ user.valuePay | currency:'USD':'symbol':'1.2-2' }}</p>
+          </td>
+          <td [ngClass]="{'text-success': user.status === 'Paid out', 'text-danger': user.status === 'I do not pay'}">
+            {{ user.status }}
+          </td>
+          <td>
+              <button class="btn btn-success me-2" (click)="onPay()">Yes</button>
           </td>
         </tr>
       </tbody>
