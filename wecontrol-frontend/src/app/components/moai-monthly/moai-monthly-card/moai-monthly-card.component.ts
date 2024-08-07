@@ -16,6 +16,7 @@ import { MoaiResponse } from '../../../models/moai-response.model';
   styleUrl: './moai-monthly-card.component.scss'
 })
 export class MoaiMonthlyCardComponent {
+  @Input() admin: boolean = false;
   @Input() month: string = '';
   @Input() bidStartDate: string = '';
   @Input() bidEndDate: string = '';
@@ -31,6 +32,7 @@ export class MoaiMonthlyCardComponent {
   @Input() participants: LoginResponse[] = [];
   @Input() moai: MoaiResponse | undefined;
   @Input() hasHighestBidInAnyMonthly: boolean = false;
+  @Input() payStatusList: any[] = [];
   @Output() bid = new EventEmitter<void>();
   @Output() pay = new EventEmitter<void>();
   @Output() notifyW = new EventEmitter<void>();
@@ -42,8 +44,6 @@ export class MoaiMonthlyCardComponent {
   @ViewChild('paysModal') paysModal!: TemplateRef<any>;
 
   currentDate: Date | undefined;
-
-  payStatusList: any[] = [];
 
   constructor(private modalService: NgbModal) {}
 
@@ -76,26 +76,70 @@ export class MoaiMonthlyCardComponent {
   }
 
   openPaysModal() {
-    this.payStatusList = this.participants.map(participant => {
-      const payment = this.pays.find(pay => pay.user.id === participant.id);
-      let paymentValue = this.extractNumber(this.moai?.value!)!;
-
-      if (this.highestBid?.user.id == participant.id) {
-        paymentValue = paymentValue + this.highestBid.valueBid;
-      }
-      return {
-        participant: participant,
-        status: payment ? 'Paid out' : 'I do not pay',
-        valuePay: paymentValue
-      };
-    });
-
     this.modalService.open(this.paysModal, { ariaLabelledBy: 'modal-basic-title' });
   }
 
-  extractNumber(value: string): number {
-    const numericValue = value.replace(/[^0-9.]+/g, '');
-    const parsedValue = parseFloat(numericValue);
-    return isNaN(parsedValue) ? 0 : parsedValue;
+  get cardOpacity(): string {
+    return this.status === 'Open' ? '1' : '0.5';
+  }
+
+  get statusColor(): string {
+    return this.status === 'Open' ? 'green' : 'red';
+  }
+
+  get showBidStartDate(): boolean {
+    return !!this.bidStartDate;
+  }
+
+  get showBidEndDate(): boolean {
+    return !!this.bidEndDate;
+  }
+
+  get showHighestBid(): boolean {
+    return (this.bids.length > 0 && this.disabled) || (this.bids.length > 0 && this.closeBids);
+  }
+
+  get showBidButton(): boolean {
+    return !(this.bids.length > 0 && this.closeBids) && !this.hasHighestBidInAnyMonthly;
+  }
+
+  get showDeleteButton(): boolean {
+    return this.youBid! && !this.disabled && !(this.bids.length > 0 && this.closeBids);
+  }
+
+  get showSendProofButton(): boolean {
+    return this.closeBids && !this.youPay;
+  }
+
+  get showViewBidsButton(): boolean {
+    return this.bids.length > 0 && !(this.bids.length > 0 && this.closeBids && !this.admin);
+  }
+
+  get showPaymentsButton(): boolean {
+    return this.closeBids;
+  }
+
+  get userPaymentStatus(): string {
+    return this.youPay ? 'Paid out' : 'I do not pay';
+  }
+
+  get userPaymentClass(): string {
+    return this.youPay ? 'text-success' : 'text-danger';
+  }
+
+  get numberOfBidsMessage(): string {
+    return this.bids.length == 0 ? 'No bids yet' : 'Number of bids:' + this.bids.length;
+  }
+
+  get statusTextClass(): string {
+    return this.status === 'Paid out' ? 'text-success' : 'text-danger';
+  }
+
+  get canNotifyUsers(): boolean {
+    return this.admin && this.closeBids && this.status === 'Open';
+  }
+
+  getBidRowClass(index: number): string {
+    return (index + 1) == 1 ? 'text-success' : 'text-danger';
   }
 }

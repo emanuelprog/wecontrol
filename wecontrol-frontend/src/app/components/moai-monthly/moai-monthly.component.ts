@@ -28,6 +28,7 @@ export class MoaiMonthlyComponent implements OnInit {
   @ViewChild('bidModal') bidModal!: TemplateRef<any>;
   @ViewChild('payModal') payModal!: TemplateRef<any>;
   moaiMonthlys: MoaiMonthlyResponse[] = [];
+  payStatusList: any[] = [];
 
   bidForm: FormGroup;
 
@@ -66,6 +67,10 @@ export class MoaiMonthlyComponent implements OnInit {
       this.minBid = this.extractNumber(this.moai?.value!) * 0.10
       this.moaiMonthlys = this.moai?.monthly!;
     }
+  }
+
+  isAdmin() {
+    return this.loginResponse?.role === 'admin';
   }
 
   back() {
@@ -176,6 +181,22 @@ export class MoaiMonthlyComponent implements OnInit {
     }
   }
 
+  getPayStatusList(): any[] {
+    return this.payStatusList = this.moai!.participants.map(participant => {
+      const payment = this.moaiMonthly?.pays.find(pay => pay.user.id === participant.id);
+      let paymentValue = this.extractNumber(this.moai?.value!)!;
+      let highestBid = this.findMyHighestBidValue();
+      if (highestBid?.user.id == participant.id) {
+        paymentValue = paymentValue + highestBid.valueBid;
+      }
+      return {
+        participant: participant,
+        status: payment ? 'Paid out' : 'I do not pay',
+        valuePay: paymentValue
+      };
+    });
+  }
+
   notifyUsersViaWhatsapp(user: any, moaiMonthly: MoaiMonthlyResponse) {
 
     if (!this.moai || !this.moai.monthly || !this.moai.participants) {
@@ -236,7 +257,7 @@ export class MoaiMonthlyComponent implements OnInit {
       let highestBid = this.highestBid(monthly.bids);
 
       if (highestBid) {
-        let isUserParticipant = this.moai?.participants.some(participant => participant.id === highestBid.user.id);
+        let isUserParticipant = this.moai?.participants.some(participant => participant.id === highestBid?.user.id);
 
         if (isUserParticipant) {
           return highestBid;

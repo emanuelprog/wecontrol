@@ -1,27 +1,41 @@
-<div class="card" [ngStyle]="{'opacity': status === 'Open' ? '1' : '0.5'}">
-    <div class="card-header">
-      {{ month }}
-    </div>
-    <div class="card-body">
-      <h5 class="card-title">{{ status }} <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': status === 'Open' ? 'green' : 'red'}" aria-hidden="true"></i></h5>
-      <mat-divider class="mb-2"></mat-divider>
-      <p class="card-text" *ngIf="bidStartDate">Bid Start: {{ bidStartDate.slice(0, 10) }}</p>
-      <p class="card-text" *ngIf="bidEndDate">Bid End: {{ bidEndDate.slice(0, 10) }}</p>
-      <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid: {{ highestBid?.valueBid | currency:'USD':'symbol':'1.2-2' }}</p>
-      <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid User: {{ highestBid?.user?.name }}</p>
-      <mat-divider class="mb-2" *ngIf="!(bids.length > 0 && closeBids)"></mat-divider>
-      <button class="btn btn-primary btnBid" [disabled]="disabled && status != 'Open'" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids) && !hasHighestBidInAnyMonthly" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
-      <button class="btn icons" matTooltip="Delete bid" *ngIf="role == 'user' && youBid && !disabled && !(bids.length > 0 && closeBids)" (click)="onDelete()">
+<div class="card" [ngStyle]="{'opacity': cardOpacity}">
+  <div class="card-header">
+    {{ month }}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{ status }} 
+      <i class="fa fa-circle fa-2xs" [ngStyle]="{'color': statusColor}" aria-hidden="true"></i>
+    </h5>
+
+    <mat-divider class="mb-2"></mat-divider>
+
+    <p class="card-text" *ngIf="showBidStartDate">Bid Start: {{ bidStartDate.slice(0, 10) }}</p>
+    <p class="card-text" *ngIf="showBidEndDate">Bid End: {{ bidEndDate.slice(0, 10) }}</p>
+    <p class="card-text text-success" *ngIf="showHighestBid">Highest Bid: {{ highestBid?.valueBid | currency:'USD':'symbol':'1.2-2' }}</p>
+    <p class="card-text text-success" *ngIf="showHighestBid">Highest Bid User: {{ highestBid?.user?.name }}</p>
+
+    <mat-divider class="mb-2" *ngIf="!(bids.length > 0 && closeBids)"></mat-divider>
+
+    <div id="btnUser" *ngIf="!admin">
+      <button class="btn btn-primary btnBid" [disabled]="disabled && status != 'Open'" *ngIf="showBidButton" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
+      <button class="btn icons" matTooltip="Delete bid" *ngIf="showDeleteButton" (click)="onDelete()">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
-      <button class="btn btn-primary" *ngIf="role == 'admin' && bids.length > 0 && !(bids.length > 0 && closeBids && role != 'admin')" (click)="openBidsModal()">View bids</button>
-      <button class="btn btn-primary m-2" *ngIf="role == 'admin' && closeBids" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
-      <p style="font-weight: bolder;" [ngClass]="{'text-success': youPay, 'text-danger': !youPay}" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ youPay ? 'Paid out' : 'I do not pay' }}</p>
-      <button class="btn btn-success m-2" *ngIf="role == 'user' && closeBids && !youPay" (click)="onSendProof()" [disabled]="disabled && status != 'Open'"><i class="fa-brands fa-whatsapp fa-xl me-2" style="color: white;"></i>Send Proof</button>
+      <button class="btn btn-success m-2" *ngIf="showSendProofButton" (click)="onSendProof()" [disabled]="disabled && status != 'Open'">
+        <i class="fa-brands fa-whatsapp fa-xl me-2" style="color: white;"></i>Send Proof
+      </button>
     </div>
-    <div class="card-footer">
-      <p style="margin: 0;">{{ bids.length == 0 ? 'No bids yet' : 'Number of bids:' + bids.length }}</p>
+
+    <div id="btnAdmin" *ngIf="admin">
+      <button class="btn btn-primary" *ngIf="showViewBidsButton" (click)="openBidsModal()">View bids</button>
+      <button class="btn btn-primary m-2" *ngIf="showPaymentsButton" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
     </div>
+
+    <p style="font-weight: bolder;" [ngClass]="userPaymentClass" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ userPaymentStatus }}</p>
+  </div>
+  <div class="card-footer">
+    <p style="margin: 0;">{{ numberOfBidsMessage }}</p>
+  </div>
 </div>
 
 <ng-template #bidsModal let-modal>
@@ -39,9 +53,9 @@
       </thead>
       <tbody>
         <tr *ngFor="let bid of bids; let i = index">
-          <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ i + 1 }}</td>
-          <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ bid.user.name }}</td>
-          <td [ngClass]="{'text-success': (i + 1) == 1, 'text-danger' : (i + 1) != 1}">{{ bid.valueBid | currency:'USD':'symbol':'1.2-2' }}</td>
+          <td [ngClass]="getBidRowClass(i)">{{ i + 1 }}</td>
+          <td [ngClass]="getBidRowClass(i)">{{ bid.user.name }}</td>
+          <td [ngClass]="getBidRowClass(i)">{{ bid.valueBid | currency:'USD':'symbol':'1.2-2' }}</td>
         </tr>
       </tbody>
     </table>
@@ -72,15 +86,17 @@
           <td>
             <p>{{ user.valuePay | currency:'USD':'symbol':'1.2-2' }}</p>
           </td>
-          <td [ngClass]="{'text-success': user.status === 'Paid out', 'text-danger': user.status === 'I do not pay'}">
+          <td [ngClass]="statusTextClass">
             {{ user.status }}
           </td>
           <td>
-              <button class="btn btn-success me-2" *ngIf="user.status === 'I do not pay'" (click)="onPay(user)">Yes</button>
+            <button class="btn btn-success me-2" *ngIf="user.status === 'I do not pay'" (click)="onPay(user)">Yes</button>
           </td>
           <td>
-            <i class="fa-brands fa-whatsapp fa-2x me-2" style="color: green; cursor: pointer;" (click)="onNotifyUsersViaWhatsapp(user)" *ngIf="role == 'admin' && closeBids && status === 'Open' && user.status == 'I do not pay'"></i>
-            <i class="fa-regular fa-envelope fa-2x" style="color: #0D6EFD; cursor: pointer;" (click)="onNotifyUsersViaEmail(user)" *ngIf="role == 'admin' && closeBids && status === 'Open' && user.status == 'I do not pay'"></i>
+            <div class="notify-buttons">
+              <i class="fa-brands fa-whatsapp whatsapp" (click)="onNotifyUsersViaWhatsapp(user)" *ngIf="canNotifyUsers && user.status == 'I do not pay'"></i>
+              <i class="fa-regular fa-envelope email" (click)="onNotifyUsersViaEmail(user)" *ngIf="canNotifyUsers && user.status == 'I do not pay'"></i>
+            </div>
           </td>
         </tr>
       </tbody>

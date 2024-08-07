@@ -67,4 +67,32 @@ export class MoaiCardComponent {
   onParticipate() {
     this.participate.emit();
   }
+
+  get statusColor(): string {
+    return this.status === 'Open' ? 'green' : 'red';
+  }
+
+  get isUser(): boolean {
+    return this.loginResponse?.role === 'user';
+  }
+
+  get isAdmin(): boolean {
+    return this.loginResponse?.role === 'admin';
+  }
+
+  get canParticipate(): boolean {
+    return this.isUser && !this.isParticipant() && this.status === 'Open';
+  }
+
+  get canViewMoai(): boolean {
+    return (this.isAdmin || this.isParticipant()) && this.participants.length > 0;
+  }
+
+  get canEditMoai(): boolean {
+    return this.isAdmin && this.participants.length === 0;
+  }
+
+  get canDeleteMoai(): boolean {
+    return this.isAdmin && this.participants.length === 0;
+  }
 }

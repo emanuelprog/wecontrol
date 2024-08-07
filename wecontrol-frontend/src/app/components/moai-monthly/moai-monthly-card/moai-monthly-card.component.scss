@@ -37,3 +37,32 @@
   .btnBid {
     box-shadow: 0px 8px 12px #bdd8ff;
   }
+
+  .notify-buttons {
+    display: flex;
+    align-items: center;
+  }
+  
+  .notify-buttons .whatsapp, .notify-buttons .email {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    margin-left: 5px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .notify-buttons .whatsapp {
+    background-color: green;
+  }
+  
+  .notify-buttons .email {
+    background-color: #0D6EFD;
+  }
+  
+  .notify-buttons .whatsapp:hover, .notify-buttons .email:hover {
+    opacity: 0.8;
+  }
