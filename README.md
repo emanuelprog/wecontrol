@@ -18,11 +18,13 @@ WeControl is a project developed using Spring Boot for the backend and Angular f
 2. **Moai Management**
    - **Admin Role:**
      - Create and manage moai
+     - View and manage payments for each moai
+     - Mark user payments as received for each moai month
+     - Send reminders via WhatsApp or email if a user has not paid
    - **User Role:**
      - Choose to participate in moai
      - Moai month generation based on the creation date
-   - Automated daily method to check if a moai can be started
-   - Bidding system where the highest bidder wins
+     - Participate in bidding system where the highest bidder wins
 
 ## Endpoints
 
@@ -39,11 +41,15 @@ WeControl is a project developed using Spring Boot for the backend and Angular f
 - **DELETE** `/api/moai/{id}`: Delete a moai (Admin only).
 - **POST** `/api/moai/add-participant`: Participate in a moai (User only).
 - **POST** `/api/moai/bid-monthly`: Place a bid in a moai (User only).
+- **POST** `/api/moai/pay-monthly`: Mark a user's payment as received for a specific moai month (Admin only).
 
 ## Roles and Permissions
 - **Admin:**
   - Can create, update, and delete moais.
   - Can manage all aspects of moai.
+  - Can view and manage payments for each moai.
+  - Can mark user payments as received.
+  - Can send payment reminders via WhatsApp or email.
 - **User:**
   - Can view available moais.
   - Can participate in moais.
