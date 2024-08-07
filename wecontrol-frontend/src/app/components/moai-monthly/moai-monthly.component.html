@@ -27,6 +27,7 @@
             [moai]="moai"
             (pay)="createPay($event, moaiMonthly)"
             [hasHighestBidInAnyMonthly]="hasHighestBidInAnyMonthly()"
+            (sendProof)="sendingProof()"
           >
             </app-moai-monthly-card>
         </div>

@@ -16,7 +16,8 @@
       </button>
       <button class="btn btn-primary" *ngIf="role == 'admin' && bids.length > 0 && !(bids.length > 0 && closeBids && role != 'admin')" (click)="openBidsModal()">View bids</button>
       <button class="btn btn-primary m-2" *ngIf="role == 'admin' && closeBids" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
-      <p class="card-text" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ youPay ? 'Paid out' : 'Pay' }}</p>
+      <p style="font-weight: bolder;" [ngClass]="{'text-success': youPay, 'text-danger': !youPay}" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ youPay ? 'Paid out' : 'I do not pay' }}</p>
+      <button class="btn btn-success m-2" *ngIf="role == 'user' && closeBids && !youPay" (click)="onSendProof()" [disabled]="disabled && status != 'Open'"><i class="fa-brands fa-whatsapp fa-xl me-2" style="color: white;"></i>Send Proof</button>
     </div>
     <div class="card-footer">
       <p style="margin: 0;">{{ bids.length == 0 ? 'No bids yet' : 'Number of bids:' + bids.length }}</p>

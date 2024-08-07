@@ -204,6 +204,14 @@ export class MoaiMonthlyComponent implements OnInit {
     })
   }
 
+  sendingProof() {
+    if (!this.moai || !this.moai.monthly || !this.moai.participants) {
+      return;
+    }
+    const link = this.whatsappService.buildWhatsAppLink(this.extractNumber(this.moai.organizer.cellphone), '');
+    window.open(link, '_blank');
+  }
+
   createPay(user: any, moaiMonthly: MoaiMonthlyResponse) {
     let pay: PayResponse = new PayResponse(user.participant, user.valuePay);
 

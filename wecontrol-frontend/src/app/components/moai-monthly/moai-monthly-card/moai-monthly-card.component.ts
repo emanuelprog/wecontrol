@@ -36,6 +36,7 @@ export class MoaiMonthlyCardComponent {
   @Output() notifyW = new EventEmitter<void>();
   @Output() notifyE = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
+  @Output() sendProof = new EventEmitter<void>();
 
   @ViewChild('bidsModal') bidsModal!: TemplateRef<any>;
   @ViewChild('paysModal') paysModal!: TemplateRef<any>;
@@ -56,6 +57,10 @@ export class MoaiMonthlyCardComponent {
 
   onPay(user: any) {
     this.pay.emit(user);
+  }
+
+  onSendProof() {
+    this.sendProof.emit();
   }
 
   onNotifyUsersViaWhatsapp(user: any) {
