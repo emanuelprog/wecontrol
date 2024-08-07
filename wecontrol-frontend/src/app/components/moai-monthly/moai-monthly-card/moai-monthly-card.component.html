@@ -10,14 +10,13 @@
       <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid: {{ highestBid?.valueBid | currency:'USD':'symbol':'1.2-2' }}</p>
       <p class="card-text text-success" *ngIf="(bids.length > 0 && disabled) || (bids.length > 0 && closeBids)">Highest Bid User: {{ highestBid?.user?.name }}</p>
       <mat-divider class="mb-2" *ngIf="!(bids.length > 0 && closeBids)"></mat-divider>
-      <button class="btn btn-primary btnBid" [disabled]="disabled && status != 'Open'" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids)" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
+      <button class="btn btn-primary btnBid" [disabled]="disabled && status != 'Open'" *ngIf="role != 'admin' && !(bids.length > 0 && closeBids) && !hasHighestBidInAnyMonthly" (click)="onBid()">{{ youBid ? 'Increase bid' : 'Bid'}}</button>
       <button class="btn icons" matTooltip="Delete bid" *ngIf="role == 'user' && youBid && !disabled && !(bids.length > 0 && closeBids)" (click)="onDelete()">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
       <button class="btn btn-primary" *ngIf="role == 'admin' && bids.length > 0 && !(bids.length > 0 && closeBids && role != 'admin')" (click)="openBidsModal()">View bids</button>
       <button class="btn btn-primary m-2" *ngIf="role == 'admin' && closeBids" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
       <p class="card-text" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ youPay ? 'Paid out' : 'Pay' }}</p>
-      <button class="btn btn-primary" (click)="onNotifyUsers()" *ngIf="role == 'admin' && closeBids && status === 'Open'">Notify via WhatsApp</button>
     </div>
     <div class="card-footer">
       <p style="margin: 0;">{{ bids.length == 0 ? 'No bids yet' : 'Number of bids:' + bids.length }}</p>
@@ -63,11 +62,12 @@
           <th scope="col">Value</th>
           <th scope="col">Status</th>
           <th scope="col">Pay?</th>
+          <th scope="col" class="text-nowrap">Notify via</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let user of payStatusList; let i = index">
-          <td>{{ user.name }}</td>
+          <td>{{ user.participant.name }}</td>
           <td>
             <p>{{ user.valuePay | currency:'USD':'symbol':'1.2-2' }}</p>
           </td>
@@ -75,7 +75,11 @@
             {{ user.status }}
           </td>
           <td>
-              <button class="btn btn-success me-2" (click)="onPay()">Yes</button>
+              <button class="btn btn-success me-2" *ngIf="user.status === 'I do not pay'" (click)="onPay(user)">Yes</button>
+          </td>
+          <td>
+            <i class="fa-brands fa-whatsapp fa-2x me-2" style="color: green; cursor: pointer;" (click)="onNotifyUsersViaWhatsapp(user)" *ngIf="role == 'admin' && closeBids && status === 'Open' && user.status == 'I do not pay'"></i>
+            <i class="fa-regular fa-envelope fa-2x" style="color: #0D6EFD; cursor: pointer;" (click)="onNotifyUsersViaEmail(user)" *ngIf="role == 'admin' && closeBids && status === 'Open' && user.status == 'I do not pay'"></i>
           </td>
         </tr>
       </tbody>

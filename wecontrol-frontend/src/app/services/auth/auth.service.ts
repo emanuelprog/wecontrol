@@ -20,18 +20,18 @@ export class AuthService {
   constructor(private httpClient: HttpClient, private ngZone: NgZone, private snackBar: MatSnackBar, private router: Router) {
     this.initStorageEventListener();
     this.initActivityListeners();
-    
+
   }
 
   login(login: string, password: string): Observable<HttpResponse<any>> {
     const userList = StorageService.getUserList();
-    
+
     const existingUser = userList.find(userKey => {
       const data = StorageService.getUser(userKey);
       return data.user && data.user.login === login;
     });
 
-    
+
 
     if (existingUser) {
       this.onMessage('You are already logged into another session. Please log out before trying again.', '', 2000);
@@ -137,7 +137,7 @@ export class AuthService {
       this.clearInactivityTimer();
       this.loggedIn.next(false);
       this.router.navigate(['/login']);
-    } 
+    }
   }
 
   private clearLoginState(): void {
@@ -195,7 +195,8 @@ export class AuthService {
       password: registerForm.get('password')?.value,
       role: registerForm.get('role')?.value,
       name: registerForm.get('name')?.value,
-      email: registerForm.get('email')?.value
+      email: registerForm.get('email')?.value,
+      cellphone: registerForm.get('cellphone')?.value
     }
     return this.httpClient.post<any>(this.baseUrl + '/register', registerJson, { observe: 'response'});
   }

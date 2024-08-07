@@ -30,9 +30,11 @@ export class MoaiMonthlyCardComponent {
   @Input() pays: PayResponse[] = [];
   @Input() participants: LoginResponse[] = [];
   @Input() moai: MoaiResponse | undefined;
+  @Input() hasHighestBidInAnyMonthly: boolean = false;
   @Output() bid = new EventEmitter<void>();
   @Output() pay = new EventEmitter<void>();
-  @Output() notify = new EventEmitter<void>();
+  @Output() notifyW = new EventEmitter<void>();
+  @Output() notifyE = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
 
   @ViewChild('bidsModal') bidsModal!: TemplateRef<any>;
@@ -52,12 +54,16 @@ export class MoaiMonthlyCardComponent {
     this.delete.emit();
   }
 
-  onPay() {
-    this.pay.emit();
+  onPay(user: any) {
+    this.pay.emit(user);
   }
 
-  onNotifyUsers() {
-    this.notify.emit();
+  onNotifyUsersViaWhatsapp(user: any) {
+    this.notifyW.emit(user);
+  }
+
+  onNotifyUsersViaEmail(user: any) {
+    this.notifyE.emit(user);
   }
 
   openBidsModal(): void {
@@ -68,17 +74,17 @@ export class MoaiMonthlyCardComponent {
     this.payStatusList = this.participants.map(participant => {
       const payment = this.pays.find(pay => pay.user.id === participant.id);
       let paymentValue = this.extractNumber(this.moai?.value!)!;
-      
+
       if (this.highestBid?.user.id == participant.id) {
         paymentValue = paymentValue + this.highestBid.valueBid;
       }
       return {
-        ...participant,
+        participant: participant,
         status: payment ? 'Paid out' : 'I do not pay',
         valuePay: paymentValue
       };
     });
-    
+
     this.modalService.open(this.paysModal, { ariaLabelledBy: 'modal-basic-title' });
   }
 

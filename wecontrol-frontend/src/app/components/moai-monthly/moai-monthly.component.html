@@ -22,9 +22,11 @@
             (delete)="openConfirmDeleteModal(youBid(moaiMonthly.bids), confirmDelete)"
             [closeBids]="closeBids(moaiMonthly)"
             [youPay]="youPay(moaiMonthly.pays)"
-            (notify)="notifyUsers()"
+            (notifyW)="notifyUsersViaWhatsapp($event, moaiMonthly)"
+            (notifyE)="notifyUsersViaEmail($event, moaiMonthly)"
             [moai]="moai"
-            (pay)="createPay()"
+            (pay)="createPay($event, moaiMonthly)"
+            [hasHighestBidInAnyMonthly]="hasHighestBidInAnyMonthly()"
           >
             </app-moai-monthly-card>
         </div>

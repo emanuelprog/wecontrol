@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 })
 export class EmailService {
 
-  private confirmEmailUrl = 'auth/confirm-email';
+  private confirmEmailUrl = 'api/auth/confirm-email';
 
   private serviceID = 'service_bdnsp4r';
   private templateID = 'template_5osv4un';

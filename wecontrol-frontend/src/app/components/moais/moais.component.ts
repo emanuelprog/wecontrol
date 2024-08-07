@@ -64,8 +64,6 @@ export class MoaisComponent implements OnInit {
       next: data => {
         if (data.body) {
           this.moais = data.body.body;
-          console.log(this.moais);
-          
           this.onPageChange({ pageIndex: 0, pageSize: 2 });
         }
       },

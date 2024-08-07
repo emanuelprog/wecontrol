@@ -36,7 +36,8 @@ export class RegisterLayoutComponent {
       login: ['', [Validators.required, noWhitespaceValidator()]],
       password: ['', [Validators.required, Validators.minLength(6), noWhitespaceValidator()]],
       confirmPassword: ['', [Validators.required, Validators.minLength(6), noWhitespaceValidator()]],
-      role: ['USER']
+      role: ['USER'],
+      cellphone: ['', [Validators.required]]
     }, { validators: passwordMatchValidator });
   }
 
@@ -44,6 +45,30 @@ export class RegisterLayoutComponent {
     this.showPassword = !this.showPassword;
     const passwordField = document.getElementById('password') as HTMLInputElement;
     passwordField.type = this.showPassword ? 'text' : 'password';
+  }
+
+  formatCellphone(): void {
+    let input = this.registerForm.get('cellphone')?.value.replace(/\D/g, '');
+    if (input.length > 11) {
+      input = input.substring(0, 11);
+    }
+    const part1 = input.substring(0, 2);
+    const part2 = input.substring(2, 3);
+    const part3 = input.substring(3, 7);
+    const part4 = input.substring(7, 11);
+
+    let formatted = '';
+    if (input.length > 7) {
+      formatted = `(${part1}) ${part2} ${part3}-${part4}`;
+    } else if (input.length > 3) {
+      formatted = `(${part1}) ${part2} ${part3}`;
+    } else if (input.length > 2) {
+      formatted = `(${part1}) ${part2}`;
+    } else if (input.length > 0) {
+      formatted = `(${part1}`;
+    }
+
+    this.registerForm.get('cellphone')?.setValue(formatted, { emitEvent: false });
   }
 
   onSubmit() {

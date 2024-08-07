@@ -1,4 +1,4 @@
 package com.app.wecontrol.dtos.user;
 
-public record UserResponseDTO(String id, String email, String name) {
+public record UserResponseDTO(String id, String email, String name, String cellphone) {
 }

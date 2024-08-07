@@ -15,6 +15,7 @@ import { BidResponse } from '../../models/bid.model';
 import { MoaiService } from '../../services/moai/moai.service';
 import { PayResponse } from '../../models/pay.model';
 import { WhatsAppService } from '../../services/whatsapp/whatsapp.service';
+import { EmailService } from '../../services/email/email.service';
 
 @Component({
   selector: 'app-moai-monthly',
@@ -48,7 +49,8 @@ export class MoaiMonthlyComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private moaiService: MoaiService,
-    private whatsappService: WhatsAppService
+    private whatsappService: WhatsAppService,
+    private emailService: EmailService
     ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
@@ -174,56 +176,83 @@ export class MoaiMonthlyComponent implements OnInit {
     }
   }
 
-  notifyUsers() {
-    const users = [
-      { phoneNumber: '67991864602', message: 'Hello User!' },
-    ];
+  notifyUsersViaWhatsapp(user: any, moaiMonthly: MoaiMonthlyResponse) {
 
-    users.forEach(user => {
-      const link = this.whatsappService.buildWhatsAppLink(user.phoneNumber, user.message);
-      window.open(link, '_blank');
-    });
-  }
-
-  createPay() {
-    let myHighestBidValue = this.findMyHighestBidValue();
-    console.log(myHighestBidValue);
-    
-    if (myHighestBidValue !== undefined) {
-      this.minPay = myHighestBidValue + this.extractNumber(this.moai?.value!);
-    } else {
-      this.minPay = this.extractNumber(this.moai?.value!);
+    if (!this.moai || !this.moai.monthly || !this.moai.participants) {
+      return;
     }
-    
-    let pay: PayResponse = new PayResponse(this.loginResponse!, this.minPay);
-    console.log(pay);
-    
-    this.moai?.monthly.find(mo => mo == this.moaiMonthly)?.pays.push(pay);
-    
-    // this.moaiService.payMonthly(this.moai!).subscribe({
-    //   next: data => {
-    //     if (data.body) {
-    //       this.onMessage(data.body.message, '', 2000);
-    //       this.closeModal();
-    //     }
-    //   },
-    //   error: (err) => {
-    //     this.onMessage(err.error.message, '', 2000);
-    //     this.moaiMonthly = undefined;
-    //   }
-    // })
+
+    const link = this.whatsappService.buildWhatsAppLink(this.extractNumber(user.participant.cellphone), 'Bora paga o mês ' + moaiMonthly.month + ' do ' + this.moai.name + ' meu pix:' + this.loginResponse?.cellphone);
+    window.open(link, '_blank');
   }
 
-  findMyHighestBidValue(): number | undefined {
+  notifyUsersViaEmail(user: any, moaiMonthly: MoaiMonthlyResponse) {
+    this.emailService.confirmEmail(user.participant.email).subscribe({
+      next: data => {
+        if (data.body) {
+          const subject = 'Bora paga o mês ' + moaiMonthly.month + ' do ' + this.moai!.name + ' meu pix:' + this.loginResponse?.cellphone;
+
+          this.emailService.sendEmail(user.participant.email, subject, '').then(
+            response => this.onMessage('E-mail sending with success', '', 2000),
+            error => this.onMessage('Error sending email', '', 2000)
+            );
+        }
+      },
+      error: (err: any) => {
+        this.onMessage(err.error.message, '', 2000);
+      }
+    })
+  }
+
+  createPay(user: any, moaiMonthly: MoaiMonthlyResponse) {
+    let pay: PayResponse = new PayResponse(user.participant, user.valuePay);
+
+    this.moai?.monthly.find(mo => mo == moaiMonthly)?.pays.push(pay);
+
+    this.moaiService.payMonthly(this.moai!).subscribe({
+      next: data => {
+        if (data.body) {
+          this.onMessage(data.body.message, '', 2000);
+          this.closeModal();
+        }
+      },
+      error: (err) => {
+        this.onMessage(err.error.message, '', 2000);
+        this.moaiMonthly = undefined;
+      }
+    })
+  }
+
+  findMyHighestBidValue(): BidResponse | undefined {
     for (let monthly of this.moaiMonthlys) {
       let highestBid = this.highestBid(monthly.bids);
-      console.log(highestBid);
-      
-      if (highestBid && highestBid.user.id === this.loginResponse?.id) {
-        return highestBid.valueBid;
+
+      if (highestBid) {
+        let isUserParticipant = this.moai?.participants.some(participant => participant.id === highestBid.user.id);
+
+        if (isUserParticipant) {
+          return highestBid;
+        }
       }
     }
     return undefined;
+  }
+
+  hasHighestBidInAnyMonthly(): boolean {
+    if (!this.moaiMonthlys || !this.loginResponse) {
+      return false;
+    }
+
+    for (let monthly of this.moaiMonthlys) {
+      if (monthly.status == 'Closed') {
+        const highestBid = this.highestBid(monthly.bids);
+        if (highestBid && highestBid.user.id === this.loginResponse.id) {
+          return true;
+        }
+      }
+    }
+
+    return false;
   }
 
   closeModal() {
@@ -231,7 +260,7 @@ export class MoaiMonthlyComponent implements OnInit {
     this.isEdit = false;
   }
 
-  extractNumber(value: string): number {
+  extractNumber(value: string): number | any {
     const numericValue = value.replace(/[^0-9.]+/g, '');
     const parsedValue = parseFloat(numericValue);
     return isNaN(parsedValue) ? 0 : parsedValue;
@@ -296,6 +325,7 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   private onMessage(message: string, action: string, duration: number) {
+    this.closeModal();
     this.snackBar.open(message, action, { duration: duration, verticalPosition: 'top', horizontalPosition: 'left' })
   }
 }

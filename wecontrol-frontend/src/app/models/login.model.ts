@@ -5,6 +5,7 @@ export interface LoginResponse {
   name: string,
   accesToken: string
   role: string
+  cellphone: string
 }
 
 export class LoginResponse implements LoginResponse {
@@ -14,7 +15,8 @@ export class LoginResponse implements LoginResponse {
     public email: string,
     public name: string,
     public accesToken: string,
-    public role: string
+    public role: string,
+    public cellphone: string
       ) { }
   }
 

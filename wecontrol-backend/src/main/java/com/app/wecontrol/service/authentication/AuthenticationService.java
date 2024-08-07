@@ -34,7 +34,8 @@ public class AuthenticationService {
                     ((User) auth.getPrincipal()).getLogin(),
                     ((User) auth.getPrincipal()).getEmail(),
                     ((User) auth.getPrincipal()).getName(),
-                    ((User) auth.getPrincipal()).getUserRole().getRole());
+                    ((User) auth.getPrincipal()).getUserRole().getRole(),
+                    (((User) auth.getPrincipal()).getCellphone()));
         } catch (Exception e) {
             throw new BadRequestException("Unable to login");
         }
@@ -49,7 +50,8 @@ public class AuthenticationService {
                     user.getLogin(),
                     user.getEmail(),
                     user.getName(),
-                    user.getUserRole().getRole());
+                    user.getUserRole().getRole(),
+                    user.getCellphone());
         } catch (Exception e) {
             throw new BadRequestException("Unable to refresh token");
         }
@@ -64,7 +66,7 @@ public class AuthenticationService {
         }
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-            User newUser = new User(registerDTO.login(), encryptedPassword, registerDTO.role(), registerDTO.name(), registerDTO.email());
+            User newUser = new User(registerDTO.login(), encryptedPassword, registerDTO.role(), registerDTO.name(), registerDTO.email(), registerDTO.cellphone());
             return userRepository.save(newUser);
         } catch (Exception e) {
             throw new BadRequestException("Unable to register!");
@@ -85,7 +87,7 @@ public class AuthenticationService {
         }
         try {
             String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
-            User newUser = new User(user.getId(), user.getLogin(), encryptedPassword, user.getUserRole(), user.getName(), user.getEmail());
+            User newUser = new User(user.getId(), user.getLogin(), encryptedPassword, user.getUserRole(), user.getName(), user.getEmail(), user.getCellphone());
             return userRepository.save(newUser);
         } catch (Exception e) {
             throw new BadRequestException("Unable to reset password!");
