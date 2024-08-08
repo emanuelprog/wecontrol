@@ -108,7 +108,7 @@ export class MoaiMonthlyCardComponent {
   }
 
   get showSendProofButton(): boolean {
-    return this.closeBids && !this.youPay;
+    return !this.youPay;
   }
 
   get showViewBidsButton(): boolean {

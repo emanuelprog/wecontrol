@@ -21,7 +21,7 @@
       <button class="btn icons" matTooltip="Delete bid" *ngIf="showDeleteButton" (click)="onDelete()">
         <i class="fa fa-trash" aria-hidden="true"></i>
       </button>
-      <button class="btn btn-success m-2" *ngIf="showSendProofButton" (click)="onSendProof()" [disabled]="disabled && status != 'Open'">
+      <button class="btn btn-success m-2" *ngIf="showSendProofButton && status == 'Open'" (click)="onSendProof()" [disabled]="disabled && status != 'Open'">
         <i class="fa-brands fa-whatsapp fa-xl me-2" style="color: white;"></i>Send Proof
       </button>
     </div>
@@ -31,7 +31,7 @@
       <button class="btn btn-primary m-2" *ngIf="showPaymentsButton" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
     </div>
 
-    <p style="font-weight: bolder;" [ngClass]="userPaymentClass" *ngIf="role == 'user' && closeBids && status === 'Open'">{{ userPaymentStatus }}</p>
+    <p style="font-weight: bolder;" [ngClass]="userPaymentClass" *ngIf="role == 'user'">{{ userPaymentStatus }}</p>
   </div>
   <div class="card-footer">
     <p style="margin: 0;">{{ numberOfBidsMessage }}</p>
