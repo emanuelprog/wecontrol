@@ -202,7 +202,7 @@ public class MoaiService {
 
         for (Moai moai : moais) {
             if (moai.getStatus().equals("Open")) {
-                if (moai.getParticipants().size() > 0) {
+                if (moai.getParticipants() != null && moai.getParticipants().size() > 0) {
                     if (LocalDateTime.now().isAfter(moai.getCreatedAt().plusMonths(1))) {
                         moai.setStatus("Expired");
                         moaiRepository.save(moai);
