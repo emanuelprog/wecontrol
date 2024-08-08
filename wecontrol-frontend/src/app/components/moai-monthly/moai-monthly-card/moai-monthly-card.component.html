@@ -29,9 +29,10 @@
     <div id="btnAdmin" *ngIf="admin">
       <button class="btn btn-primary" *ngIf="showViewBidsButton" (click)="openBidsModal()">View bids</button>
       <button class="btn btn-primary m-2" *ngIf="showPaymentsButton" (click)="openPaysModal()" [disabled]="disabled && status != 'Open'">Payments</button>
+      <button class="btn btn-primary m-2" *ngIf="showDrawButton" (click)="onDraw()" [disabled]="disabled && status != 'Open'">Draw</button>
     </div>
 
-    <p style="font-weight: bolder;" [ngClass]="userPaymentClass" *ngIf="role == 'user'">{{ userPaymentStatus }}</p>
+    <p style="font-weight: bolder;" [ngClass]="userPaymentClass" *ngIf="role == 'user' && status == 'Open'">{{ userPaymentStatus }}</p>
   </div>
   <div class="card-footer">
     <p style="margin: 0;">{{ numberOfBidsMessage }}</p>
@@ -86,7 +87,7 @@
           <td>
             <p>{{ user.valuePay | currency:'USD':'symbol':'1.2-2' }}</p>
           </td>
-          <td [ngClass]="statusTextClass">
+          <td [ngClass]="statusTextClass(user.status)">
             {{ user.status }}
           </td>
           <td>

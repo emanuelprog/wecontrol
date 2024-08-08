@@ -28,8 +28,10 @@
             (pay)="createPay($event, moaiMonthly)"
             [hasHighestBidInAnyMonthly]="hasHighestBidInAnyMonthly()"
             (sendProof)="sendingProof()"
-            [payStatusList]="getPayStatusList()"
+            (payStatusListEvt)="getPayStatusList(moaiMonthly)"
             [admin]="isAdmin()"
+            (draw)="drawingMonthly(moaiMonthly)"
+            [payStatusList]="payStatusList"
           >
             </app-moai-monthly-card>
         </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ToolbarComponent } from '../toolbar/toolbar.component';
 import { MoaiResponse } from '../../models/moai-response.model';
@@ -43,6 +43,7 @@ export class MoaiMonthlyComponent implements OnInit {
   isEdit: boolean = false;
   phoneNumber: string = '';
   message: string = '';
+  drawingBid: boolean = false;
 
   constructor(
     private route: Router,
@@ -51,7 +52,8 @@ export class MoaiMonthlyComponent implements OnInit {
     private snackBar: MatSnackBar,
     private moaiService: MoaiService,
     private whatsappService: WhatsAppService,
-    private emailService: EmailService
+    private emailService: EmailService,
+    private cdr: ChangeDetectorRef
     ) {
     const currentUserUUID = sessionStorage.getItem('currentUser');
     this.loginResponse = StorageService.getUser(currentUserUUID!).user;
@@ -120,6 +122,7 @@ export class MoaiMonthlyComponent implements OnInit {
         this.moaiMonthly = undefined;
       }
     })
+    this.cdr.detectChanges();
   }
 
   editBid() {
@@ -148,6 +151,7 @@ export class MoaiMonthlyComponent implements OnInit {
         this.moaiMonthly = undefined;
       }
     })
+    this.cdr.detectChanges();
   }
 
   openConfirmDeleteModal(bid: BidResponse | undefined, modal: TemplateRef<any>) {
@@ -179,13 +183,15 @@ export class MoaiMonthlyComponent implements OnInit {
       }
       this.bidDelete = undefined;
     }
+    this.cdr.detectChanges();
   }
 
-  getPayStatusList(): any[] {
-    return this.payStatusList = this.moai!.participants.map(participant => {
-      const payment = this.moaiMonthly?.pays.find(pay => pay.user.id === participant.id);
+  getPayStatusList(moaiMonthly: MoaiMonthlyResponse) {
+    this.payStatusList = this.moai!.participants.map(participant => {
+      const payment = moaiMonthly?.pays.find(pay => pay.user.id === participant.id);
       let paymentValue = this.extractNumber(this.moai?.value!)!;
-      let highestBid = this.findMyHighestBidValue();
+      let highestBid = this.findMyHighestBidValue(participant);
+      
       if (highestBid?.user.id == participant.id) {
         paymentValue = paymentValue + highestBid.valueBid;
       }
@@ -250,15 +256,16 @@ export class MoaiMonthlyComponent implements OnInit {
         this.moaiMonthly = undefined;
       }
     })
+    this.cdr.detectChanges();
   }
 
-  findMyHighestBidValue(): BidResponse | undefined {
+  findMyHighestBidValue(participant: LoginResponse): BidResponse | undefined {
     for (let monthly of this.moaiMonthlys) {
       let highestBid = this.highestBid(monthly.bids);
 
       if (highestBid) {
-        let isUserParticipant = this.moai?.participants.some(participant => participant.id === highestBid?.user.id);
-
+        let isUserParticipant = participant.id === highestBid?.user.id;
+        
         if (isUserParticipant) {
           return highestBid;
         }
@@ -281,6 +288,56 @@ export class MoaiMonthlyComponent implements OnInit {
       }
     }
 
+    return false;
+  }
+
+  drawingMonthly(moaiMonthly: MoaiMonthlyResponse) {
+    const userIdsWithBids = new Set<string>();
+  
+    this.moaiMonthlys.forEach(mm => {
+      mm.bids.forEach(mmb => {
+        if (this.hasHighestBidInAnyMonthlyTest(mmb.user))
+        userIdsWithBids.add(mmb.user.id);
+      });
+    });
+  
+    const participantsWithoutBids = this.moai?.participants.filter(p => !userIdsWithBids.has(p.id));
+  
+    if (participantsWithoutBids && participantsWithoutBids.length > 0) {
+      const randomIndex = Math.floor(Math.random() * participantsWithoutBids.length);
+
+      const drawnUser = participantsWithoutBids[randomIndex];
+      
+      if (drawnUser) {
+        let bid: BidResponse = new BidResponse(drawnUser, this.minBid!);
+        this.moai?.monthly.find(mo => mo == moaiMonthly)?.bids.push(bid);
+        this.moaiService.bidMonthly(this.moai!).subscribe({
+          next: data => {
+            if (data.body) {
+              this.onMessage(moaiMonthly.month + ' draw went to the participant ' + drawnUser.name, '', 2000);
+            }
+          },
+          error: (err) => {
+            this.onMessage(err.error.message, '', 2000);
+            this.moaiMonthly = undefined;
+          }
+        })
+      }
+      this.cdr.detectChanges();
+    }
+  }
+
+  hasHighestBidInAnyMonthlyTest(user: LoginResponse): boolean {
+    if (!this.moaiMonthlys || !this.loginResponse) {
+      return false;
+    }
+
+    for (let monthly of this.moaiMonthlys) {
+        const highestBid = this.highestBid(monthly.bids);
+        if (highestBid && highestBid.user.id === user.id) {
+          return true;
+        }
+    }
     return false;
   }
 
@@ -308,6 +365,9 @@ export class MoaiMonthlyComponent implements OnInit {
   }
 
   closeBids(moaiMonthly: MoaiMonthlyResponse): boolean {
+    if ((new Date() >= this.convertStringToDate(moaiMonthly.bidEndDate)) && (moaiMonthly.status == 'Open' && moaiMonthly.bids.length == 0)) {
+      this.drawingMonthly(moaiMonthly)
+    }
     return (new Date() >= this.convertStringToDate(moaiMonthly.bidEndDate));
   }
 

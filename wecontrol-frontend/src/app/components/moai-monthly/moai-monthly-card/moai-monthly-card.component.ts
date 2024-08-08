@@ -32,17 +32,19 @@ export class MoaiMonthlyCardComponent {
   @Input() participants: LoginResponse[] = [];
   @Input() moai: MoaiResponse | undefined;
   @Input() hasHighestBidInAnyMonthly: boolean = false;
-  @Input() payStatusList: any[] = [];
+  @Input() payStatusList: any[] = [];;
   @Output() bid = new EventEmitter<void>();
   @Output() pay = new EventEmitter<void>();
+  @Output() draw = new EventEmitter<void>();
+  @Output() payStatusListEvt = new EventEmitter<void>();
   @Output() notifyW = new EventEmitter<void>();
   @Output() notifyE = new EventEmitter<void>();
   @Output() delete = new EventEmitter<void>();
   @Output() sendProof = new EventEmitter<void>();
-
+  
   @ViewChild('bidsModal') bidsModal!: TemplateRef<any>;
   @ViewChild('paysModal') paysModal!: TemplateRef<any>;
-
+  
   currentDate: Date | undefined;
 
   constructor(private modalService: NgbModal) {}
@@ -71,11 +73,20 @@ export class MoaiMonthlyCardComponent {
     this.notifyE.emit(user);
   }
 
+  onDraw() {
+    this.draw.emit();
+  }
+
+  onPayStatusList() {
+    this.payStatusListEvt.emit();
+  }
+
   openBidsModal(): void {
     this.modalService.open(this.bidsModal, { ariaLabelledBy: 'modal-basic-title' });
   }
 
   openPaysModal() {
+    this.onPayStatusList();
     this.modalService.open(this.paysModal, { ariaLabelledBy: 'modal-basic-title' });
   }
 
@@ -96,11 +107,11 @@ export class MoaiMonthlyCardComponent {
   }
 
   get showHighestBid(): boolean {
-    return (this.bids.length > 0 && this.disabled) || (this.bids.length > 0 && this.closeBids);
+    return this.closeBids;
   }
 
   get showBidButton(): boolean {
-    return !(this.bids.length > 0 && this.closeBids) && !this.hasHighestBidInAnyMonthly;
+    return !(this.bids.length > 0 && this.closeBids) && !this.hasHighestBidInAnyMonthly && !this.closeBids && this.status == 'Open';
   }
 
   get showDeleteButton(): boolean {
@@ -112,11 +123,11 @@ export class MoaiMonthlyCardComponent {
   }
 
   get showViewBidsButton(): boolean {
-    return this.bids.length > 0 && !(this.bids.length > 0 && this.closeBids && !this.admin);
+    return this.bids.length > 0 && !(this.bids.length > 0 && this.closeBids && !this.admin) && this.status == 'Open';
   }
 
   get showPaymentsButton(): boolean {
-    return this.closeBids;
+    return this.closeBids && this.status == 'Open';
   }
 
   get userPaymentStatus(): string {
@@ -131,12 +142,16 @@ export class MoaiMonthlyCardComponent {
     return this.bids.length == 0 ? 'No bids yet' : 'Number of bids:' + this.bids.length;
   }
 
-  get statusTextClass(): string {
-    return this.status === 'Paid out' ? 'text-success' : 'text-danger';
+  statusTextClass(status: string): string {
+    return status === 'Paid out' ? 'text-success' : 'text-danger';
   }
 
   get canNotifyUsers(): boolean {
     return this.admin && this.closeBids && this.status === 'Open';
+  }
+
+  get showDrawButton(): boolean {
+    return this.admin && this.bids.length <= 0 && this.status === 'Open' && this.closeBids;
   }
 
   getBidRowClass(index: number): string {
