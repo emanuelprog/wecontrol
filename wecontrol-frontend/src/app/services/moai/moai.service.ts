@@ -47,7 +47,7 @@ export class MoaiService {
       'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
     });
 
-    return this.httpClient.post<any>(this.baseUrl + '/add-participant', moai, { headers: headers, observe: 'response' });
+    return this.httpClient.post<any>(this.baseUrl + `/add-participant/${moai.id}`, moai, { headers: headers, observe: 'response' });
   }
 
   bidMonthly(moai: MoaiResponse): Observable<HttpResponse<any>> {
@@ -55,7 +55,7 @@ export class MoaiService {
       'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
     });
 
-    return this.httpClient.post<any>(this.baseUrl + '/bid-monthly', moai, { headers: headers, observe: 'response' });
+    return this.httpClient.post<any>(this.baseUrl + `/bid-monthly/${moai.id}`, moai, { headers: headers, observe: 'response' });
   }
 
   deleteBid(moai: MoaiResponse): Observable<HttpResponse<any>> {
@@ -63,7 +63,7 @@ export class MoaiService {
       'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
     });
 
-    return this.httpClient.post<any>(this.baseUrl + '/delete-bid', moai, { headers: headers, observe: 'response' });
+    return this.httpClient.post<any>(this.baseUrl + `/delete-bid/${moai.id}`, moai, { headers: headers, observe: 'response' });
   }
 
   payMonthly(moai: MoaiResponse): Observable<HttpResponse<any>> {
@@ -71,7 +71,7 @@ export class MoaiService {
       'Authorization': `Bearer ${StorageService.getUser(sessionStorage.getItem('currentUser')!).accessToken}`
     });
 
-    return this.httpClient.post<any>(this.baseUrl + '/pay-monthly', moai, { headers: headers, observe: 'response' });
+    return this.httpClient.post<any>(this.baseUrl + `/pay-monthly/${moai.id}`, moai, { headers: headers, observe: 'response' });
   }
 
 }

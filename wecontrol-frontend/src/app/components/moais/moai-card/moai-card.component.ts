@@ -15,8 +15,8 @@ import { StorageService } from '../../../services/storage/storage.service';
 })
 export class MoaiCardComponent {
   @Input() name: string = '';
-  @Input() value: string = '';
-  @Input() year: string = '';
+  @Input() value: number | undefined;
+  @Input() year: number | undefined;
   @Input() participants: LoginResponse[] = [];
   @Input() status: string = '';
   @Input() organizer: string = '';

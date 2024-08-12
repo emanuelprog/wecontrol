@@ -4,8 +4,8 @@ import { MoaiMonthlyResponse } from "./moai-monthly.model";
 export interface MoaiResponse {
   id: string,
   name: string,
-  value: string,
-  year: string,
+  value: number,
+  year: number,
   rules: string,
   status: string,
   organizer: LoginResponse,
@@ -18,8 +18,8 @@ export class MoaiResponse implements MoaiResponse {
     constructor(
       public id: string,
       public name: string,
-      public value: string,
-      public year: string,
+      public value: number,
+      public year: number,
       public rules: string,
       public status: string,
       public organizer: LoginResponse,

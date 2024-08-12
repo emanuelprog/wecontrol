@@ -8,14 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PayResponseDTO {
+public class PayRequestDTO {
     private UserResponseDTO user;
     private Integer valuePay;
-
-    public static PayResponseDTO payResponseDTOfromPayRequestDTO(PayRequestDTO payRequestDTO) {
-        return new PayResponseDTO(
-                payRequestDTO.getUser(),
-                payRequestDTO.getValuePay()
-        );
-    }
 }

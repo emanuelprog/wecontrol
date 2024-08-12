@@ -36,23 +36,23 @@ public class MoaiController {
         return ResponseUtil.generateResponse("Moai successfully deleted!", HttpStatus.OK, moaiService.delete(id));
     }
 
-    @PostMapping("/add-participant")
-    public ResponseEntity<DefaultResponse> addParticipant(@RequestBody MoaiRequestDTO data) {
-        return ResponseUtil.generateResponse("Participant successfully add!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    @PostMapping("/add-participant/{id}")
+    public ResponseEntity<DefaultResponse> addParticipant(@PathVariable String id, @RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Participant successfully add!", HttpStatus.CREATED, moaiService.update(id, data));
     }
 
-    @PostMapping("/bid-monthly")
-    public ResponseEntity<DefaultResponse> bidMonthly(@RequestBody MoaiRequestDTO data) {
-        return ResponseUtil.generateResponse("Bid successfully add!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    @PostMapping("/bid-monthly/{id}")
+    public ResponseEntity<DefaultResponse> bidMonthly(@PathVariable String id, @RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Bid successfully add!", HttpStatus.CREATED, moaiService.update(id, data));
     }
 
-    @PostMapping("/delete-bid")
-    public ResponseEntity<DefaultResponse> deleteBid(@RequestBody MoaiRequestDTO data) {
-        return ResponseUtil.generateResponse("Bid successfully deleted!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    @PostMapping("/delete-bid/{id}")
+    public ResponseEntity<DefaultResponse> deleteBid(@PathVariable String id, @RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Bid successfully deleted!", HttpStatus.CREATED, moaiService.update(id, data));
     }
 
-    @PostMapping("/pay-monthly")
-    public ResponseEntity<DefaultResponse> payMonthly(@RequestBody MoaiRequestDTO data) {
-        return ResponseUtil.generateResponse("Pay successfully add!", HttpStatus.CREATED, moaiService.update(data.id(), data));
+    @PostMapping("/pay-monthly/{id}")
+    public ResponseEntity<DefaultResponse> payMonthly(@PathVariable String id, @RequestBody MoaiRequestDTO data) {
+        return ResponseUtil.generateResponse("Pay successfully add!", HttpStatus.CREATED, moaiService.update(id, data));
     }
 }

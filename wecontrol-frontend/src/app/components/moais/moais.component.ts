@@ -34,7 +34,7 @@ export class MoaisComponent implements OnInit {
   moaiForm: FormGroup;
 
   isEdit: boolean = false;
-  currentYear: string;
+  currentYear: number;
 
   constructor(
     private moaiService: MoaiService,
@@ -45,7 +45,7 @@ export class MoaisComponent implements OnInit {
     private authService: AuthService,
     ) {
     this.loginResponse = StorageService.getUser(sessionStorage.getItem('currentUser')!).user;
-    this.currentYear = new Date().getFullYear().toString();
+    this.currentYear = new Date().getFullYear();
 
     this.moaiForm = this.fb.group({
       name: ['', Validators.required],
@@ -103,7 +103,7 @@ export class MoaisComponent implements OnInit {
   createMoai() {
     const createJson = {
       name: this.moaiForm.get('name')?.value,
-      value: this.moaiForm.get('value')?.value,
+      value: this.extractNumber(this.moaiForm.get('value')?.value),
       year: this.currentYear,
       rules: this.moaiForm.get('rules')?.value,
       status: 'Open',
@@ -131,7 +131,7 @@ export class MoaisComponent implements OnInit {
     const editJson = {
       id: this.moaiEdit?.id,
       name: this.moaiForm.get('name')?.value,
-      value: this.moaiForm.get('value')?.value,
+      value: this.extractNumber(this.moaiForm.get('value')?.value),
       year: this.currentYear,
       rules: this.moaiForm.get('rules')?.value,
       status: this.moaiForm.get('status')?.value,
@@ -161,7 +161,7 @@ export class MoaisComponent implements OnInit {
     this.moaiForm.reset();
     this.moaiForm.patchValue({
       name: moai.name,
-      value: moai.value,
+      value: this.maskCurrency(moai.value.toString()),
       rules: moai.rules,
       status: moai.status
     });
@@ -242,6 +242,12 @@ export class MoaisComponent implements OnInit {
       style: 'currency',
       currency
     }).format(parseFloat(valor));
+  }
+
+  extractNumber(value: string): number | any {
+    const numericValue = value.replace(/[^0-9.]+/g, '');
+    const parsedValue = parseFloat(numericValue);
+    return isNaN(parsedValue) ? 0 : parsedValue;
   }
 
   private onMessage(message: string, action: string, duration: number) {

@@ -66,7 +66,7 @@ export class MoaiMonthlyComponent implements OnInit {
   ngOnInit(): void {
     if (history.state && history.state.data) {
       this.moai = history.state.data;
-      this.minBid = this.extractNumber(this.moai?.value!) * 0.10
+      this.minBid = this.moai?.value! * 0.10
       this.moaiMonthlys = this.moai?.monthly!;
     }
   }
@@ -189,7 +189,7 @@ export class MoaiMonthlyComponent implements OnInit {
   getPayStatusList(moaiMonthly: MoaiMonthlyResponse) {
     this.payStatusList = this.moai!.participants.map(participant => {
       const payment = moaiMonthly?.pays.find(pay => pay.user.id === participant.id);
-      let paymentValue = this.extractNumber(this.moai?.value!)!;
+      let paymentValue = this.moai?.value!;
       let highestBid = this.findMyHighestBidValue(participant);
       
       if (highestBid?.user.id == participant.id) {

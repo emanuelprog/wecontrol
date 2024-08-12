@@ -8,14 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BidResponseDTO {
+public class BidRequestDTO {
     private UserResponseDTO user;
     private Integer valueBid;
-
-    public static BidResponseDTO bidResponseDTOfromBidRequestDTO(BidRequestDTO bidRequestDTO) {
-        return new BidResponseDTO(
-                bidRequestDTO.getUser(),
-                bidRequestDTO.getValueBid()
-        );
-    }
 }
