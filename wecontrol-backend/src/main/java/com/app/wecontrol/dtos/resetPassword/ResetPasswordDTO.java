@@ -1,4 +1,13 @@
 package com.app.wecontrol.dtos.resetPassword;
 
-public record ResetPasswordDTO(String email, String newPassword) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class ResetPasswordDTO {
+    private String email;
+    private String newPassword;
 }

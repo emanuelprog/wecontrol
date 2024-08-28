@@ -1,5 +1,6 @@
 package com.app.wecontrol.models.user;
 
+import com.app.wecontrol.dtos.register.RegisterDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -67,5 +68,16 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return UserDetails.super.isEnabled();
+    }
+
+    public static User fromRegisterDTOAndEncryptedPassword(RegisterDTO registerDTO, String encryptedPassword) {
+        return new User(
+                registerDTO.getLogin(),
+                encryptedPassword,
+                registerDTO.getRole(),
+                registerDTO.getName(),
+                registerDTO.getEmail(),
+                registerDTO.getCellphone()
+        );
     }
 }

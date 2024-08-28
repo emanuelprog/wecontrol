@@ -25,17 +25,11 @@ public class AuthenticationService {
 
     public LoginResponseDTO login(AuthenticationDTO authenticationDTO) {
         try {
-            UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.login(), authenticationDTO.password());
+            UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(authenticationDTO.getLogin(), authenticationDTO.getPassword());
             var auth =  authenticationManager.authenticate(usernamePassword);
-            var acessToken = tokenService.generateAcessToken((User) auth.getPrincipal());
+            var accessToken = tokenService.generateAccessToken((User) auth.getPrincipal());
             var refreshToken  = tokenService.generateRefreshToken((User) auth.getPrincipal());
-            return new LoginResponseDTO(acessToken, refreshToken,
-                    ((User) auth.getPrincipal()).getId(),
-                    ((User) auth.getPrincipal()).getLogin(),
-                    ((User) auth.getPrincipal()).getEmail(),
-                    ((User) auth.getPrincipal()).getName(),
-                    ((User) auth.getPrincipal()).getUserRole().getRole(),
-                    (((User) auth.getPrincipal()).getCellphone()));
+            return LoginResponseDTO.fromUserAndAccessTokenAndRefreshToken((User) auth.getPrincipal(), accessToken, refreshToken);
         } catch (Exception e) {
             throw new BadRequestException("Unable to login");
         }
@@ -44,29 +38,23 @@ public class AuthenticationService {
     public LoginResponseDTO refreshToken(RefreshTokenRequestDTO refreshTokenRequestDTO) {
         try {
             User user =  userRepository.findUserByLogin(refreshTokenRequestDTO.getLogin());
-            var accessToken = tokenService.generateAcessToken(user);
-            return new LoginResponseDTO(accessToken, refreshTokenRequestDTO.getRefreshToken(),
-                    user.getId(),
-                    user.getLogin(),
-                    user.getEmail(),
-                    user.getName(),
-                    user.getUserRole().getRole(),
-                    user.getCellphone());
+            var accessToken = tokenService.generateAccessToken(user);
+            return LoginResponseDTO.fromUserAndAccessTokenAndRefreshToken(user, accessToken, refreshTokenRequestDTO.getRefreshToken());
         } catch (Exception e) {
             throw new BadRequestException("Unable to refresh token");
         }
     }
 
     public User register(RegisterDTO registerDTO) {
-        if (userRepository.findByLogin(registerDTO.login()) != null) {
+        if (userRepository.findByLogin(registerDTO.getLogin()) != null) {
             throw new BadRequestException("User already exists!");
         }
-        if (userRepository.findByEmail(registerDTO.email()) != null) {
+        if (userRepository.findByEmail(registerDTO.getEmail()) != null) {
             throw new BadRequestException("E-mail already exists!");
         }
         try {
-            String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.password());
-            User newUser = new User(registerDTO.login(), encryptedPassword, registerDTO.role(), registerDTO.name(), registerDTO.email(), registerDTO.cellphone());
+            String encryptedPassword = new BCryptPasswordEncoder().encode(registerDTO.getPassword());
+            User newUser = User.fromRegisterDTOAndEncryptedPassword(registerDTO, encryptedPassword);
             return userRepository.save(newUser);
         } catch (Exception e) {
             throw new BadRequestException("Unable to register!");
@@ -81,12 +69,12 @@ public class AuthenticationService {
     }
 
     public User resetPassword(ResetPasswordDTO data) {
-        User user = userRepository.findByEmail(data.email());
+        User user = userRepository.findByEmail(data.getEmail());
         if (user == null) {
             throw new BadRequestException("Email does not exist!");
         }
         try {
-            String encryptedPassword = new BCryptPasswordEncoder().encode(data.newPassword());
+            String encryptedPassword = new BCryptPasswordEncoder().encode(data.getNewPassword());
             User newUser = new User(user.getId(), user.getLogin(), encryptedPassword, user.getUserRole(), user.getName(), user.getEmail(), user.getCellphone());
             return userRepository.save(newUser);
         } catch (Exception e) {
